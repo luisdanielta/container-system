@@ -1,6 +1,6 @@
 services:
   teable:
-    image: ghcr.io/teableio/teable:latest
+    image: ghcr.io/teableio/teable:0.5.0-alpha-1.10.0-build.530-amd64
     restart: always
     ports:
       - '3008:3000'
