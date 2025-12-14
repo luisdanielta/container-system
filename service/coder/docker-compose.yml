@@ -1,13 +1,17 @@
 services:
   coder:
-    image: ghcr.io/coder/coder:v2.15.3
+    image: ghcr.io/coder/coder:v2.27.2-amd64
     container_name: coder-server
     ports:
       - 7089:7080
     environment:
       CODER_PG_CONNECTION_URL: "postgresql://postgres_shared:postgres_shared@10.10.3.153/coder?sslmode=disable"
       CODER_HTTP_ADDRESS: "0.0.0.0:7080"
-      CODER_ACCESS_URL: "${CODER_ACCESS_URL}"
+      CODER_ACCESS_URL: "http://192.168.1.250:7089"
+      CODER_DERP_SERVER_ENABLE: "true"
+      CODER_BLOCK_DIRECT: "false"
+      CODER_DERP_CONFIG_URL: ""
+      CODER_DERP_CONFIG_PATH: ""
     group_add:
       - "998" # docker group on host
     volumes:
@@ -19,7 +23,7 @@ services:
       network_service:
 
     dns:
-      - 10.10.3.3
+      - 1.1.1.1
 
 volumes:
   home:
