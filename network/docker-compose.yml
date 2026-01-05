@@ -1,3 +1,12 @@
+x-net-common: &net_common
+  driver: bridge
+  driver_opts:
+    com.docker.network.driver.mtu: "1500"
+    com.docker.network.bridge.enable_icc: "false"            # Restrict inter-container communication
+    com.docker.network.bridge.enable_ip_masquerade: "true"   # Enable IP masquerading
+  labels:
+    com.example.owner: "platform"
+
 services:
   network:
     container_name: network-system
@@ -20,7 +29,9 @@ services:
 
 networks:
   file-system:
-    driver: bridge
+    <<: *net_common
+    name: fs_net
+    internal: true
     ipam:
       config:
         - subnet: 10.10.1.0/24
@@ -28,6 +39,7 @@ networks:
   
   db:
     driver: bridge
+    internal: true # Restricts internet access
     ipam:
       config:
         - subnet: 10.10.2.0/24
