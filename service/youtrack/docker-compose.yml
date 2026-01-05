@@ -2,8 +2,6 @@ services:
   youtrack:
     image: jetbrains/youtrack:2025.2.89748
     container_name: youtrack
-    ports:
-      - "3031:8080"
     volumes:
       - data:/opt/youtrack/data
       - conf:/opt/youtrack/conf
@@ -14,7 +12,7 @@ services:
     restart: unless-stopped
     networks:
       network_service:
-        ipv4_address: 10.10.3.50
+        ipv4_address: 10.10.3.55 #:8080
     dns:
       - 10.10.3.200
 
