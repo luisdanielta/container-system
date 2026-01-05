@@ -1,7 +1,14 @@
 services:
   rstudio:
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: rstudio
-    image: rocker/geospatial:4.4
+    image: rstudio:lidr
+    privileged: true
+    devices:
+      - /dev/dri/card0:/dev/dri/card0:rwm
+      - /dev/dri/renderD128:/dev/dri/renderD128:rwm
     ports:
       - 8787:8787
     environment:
