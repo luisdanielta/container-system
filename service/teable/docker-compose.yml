@@ -1,9 +1,9 @@
 services:
   teable:
-    image: ghcr.io/teableio/teable:0.5.0-alpha-1.10.0-build.530-amd64
+    image: ghcr.io/teableio/teable:0.5.0-alpha-1.10.0-build.600-amd64
     restart: always
     ports:
-      - '3008:3000'
+      - 3045:3000
     volumes:
       - teable-data:/app/.assets:rw
     env_file:
@@ -11,7 +11,10 @@ services:
     environment:
       - NEXT_ENV_IMAGES_ALL_REMOTE=true
     networks:
-      - teable
+      network_service:
+        ipv4_address: 10.10.3.28
+      teable-network:
+        ipv4_address: 178.18.0.25
     depends_on:
       teable-db:
         condition: service_healthy
@@ -36,7 +39,8 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     networks:
-      - teable
+      teable-network:
+        ipv4_address: 178.18.0.26
     healthcheck:
       test: ['CMD-SHELL', "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'"]
       interval: 10s
@@ -51,7 +55,8 @@ services:
     volumes:
       - teable-cache:/data:rw
     networks:
-      - teable
+      teable-network:
+        ipv4_address: 178.18.0.27
     command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
     healthcheck:
       test: ['CMD', 'redis-cli', '--raw', 'incr', 'ping']
@@ -60,8 +65,13 @@ services:
       retries: 3
 
 networks:
-  teable:
-    name: teable-network
+  network_service:
+    external: true
+  teable-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 178.18.0.0/16
 
 volumes:
   teable-db: {}
