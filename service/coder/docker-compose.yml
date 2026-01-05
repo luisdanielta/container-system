@@ -21,9 +21,10 @@ services:
     restart: unless-stopped
     networks:
       network_service:
+        ipv4_address: 10.10.3.20 # 7080
 
     dns:
-      - 1.1.1.1
+      - 10.10.3.200
 
 volumes:
   home:
