@@ -11,9 +11,10 @@ services:
       - TZ=${VPNTZ}
       - SERVERPORT=${VPNPORT}
       - SERVERURL=${VPNURL}
-      - PEERS=4
+      - PEERS=5
       - PEERDNS=auto
       - INTERNAL_SUBNET=192.168.2.0
+      # - ALLOWEDIPS=10.10.0.0/16
     volumes:
       - ./data:/config
       - /lib/modules:/lib/modules
