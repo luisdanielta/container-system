@@ -7,18 +7,13 @@ services:
       FTLCONF_dns_upstreams: "10.10.5.201#5053"
       FTLCONF_dns_listeningMode: "all"
       FTLCONF_webserver_api_password: ${PIHOLE_PSWD}
+      SKIPGRAVITYONBOOT: true
     volumes:
       - data:/etc/pihole/
       - dnsmasq:/etc/dnsmasq.d/
     cap_add:
       - NET_ADMIN
     restart: unless-stopped
-    ports:
-      - 8081:80
-      - 53:53/tcp
-      - 53:53/udp
-      - 67:67/udp
-      - 443:443
     networks:
       network_security:
         ipv4_address: 10.10.5.200 # :53/tcp/udp :67/udp :443/tcp :80/tcp

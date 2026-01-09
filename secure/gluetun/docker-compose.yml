@@ -17,7 +17,7 @@ services:
     ports:
       - 8000:8000
       - 8978:8978 # qBittorrent WebUI
-      - 3050:6901 # VNC for Chrome
+      #- 3050:6901 # VNC for Chrome
     restart: unless-stopped
     networks:
       network_security:

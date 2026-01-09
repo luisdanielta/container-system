@@ -1,1 +1,11 @@
+#system
 /user
+
+#local files
+data/
+.env
+
+.terraform
+.terraform.lock.hcl
+terraform.tfstate
+terraform.tfstate.backup

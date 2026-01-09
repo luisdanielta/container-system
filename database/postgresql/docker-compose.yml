@@ -1,5 +1,3 @@
-version: '3.5'
-
 services:  
   langfuse_postgres:
     image: postgres:15

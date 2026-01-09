@@ -1,21 +1,18 @@
-version: '3.5'
 services:
   pgadmin:
     image: dpage/pgadmin4:9.3.0
     container_name: pgadmin
     restart: unless-stopped
     environment:
-      PGADMIN_DEFAULT_EMAIL: email@gmail.com
-      PGADMIN_DEFAULT_PASSWORD: password
-    ports:
-      - 5050:80
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
     networks:
       network_service:
-        ipv4_address: 10.10.3.30
+        ipv4_address: 10.10.3.30 # 80
       network_db:
         ipv4_address: 10.10.2.10
     dns:
-      - 10.10.3.3
+      - 10.10.3.200
 
 networks:
   network_service:

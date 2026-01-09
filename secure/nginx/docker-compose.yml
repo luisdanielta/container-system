@@ -1,0 +1,22 @@
+services:
+  nginx-proxy:
+    image: jc21/nginx-proxy-manager:2.12.6
+    container_name: npm
+    restart: unless-stopped
+    dns:
+      - 10.10.3.200
+    networks:
+      network_service:
+         ipv4_address: 10.10.3.190
+    volumes:
+      - data:/data
+      - letsencrypt:/etc/letsencrypt
+
+networks:
+  network_service:
+    external: true
+volumes:
+  data:
+    external: false
+  letsencrypt:
+    external: false

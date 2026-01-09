@@ -20,11 +20,11 @@ x-vol-opt: &vol-opt user_opt:/opt
 services:
   ubuntu:
     <<: *ubuntu-base
-    container_name: "ubuntu-${USER}"
+    container_name: "ubuntu-os"
     ports:
       - "2220:22"
     environment:
-      USERNAME: ${USER}
+      USERNAME: ${USERNAME}
       PSWD: ${PASSWORD}
     volumes:
       - *vol-shared
@@ -32,8 +32,8 @@ services:
       - *vol-log
       - *vol-cache
       - *vol-opt
-      - user_data:/home/${USER}
-      - user_cache:/home/${USER}/.cache
+      - user_data:/home/${USERNAME}
+      - user_cache:/home/${USERNAME}/.cache
       - dind:/var/lib/docker
       - etc:/etc
 

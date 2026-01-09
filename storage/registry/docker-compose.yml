@@ -3,13 +3,25 @@ services:
     image: registry:2
     container_name: registry-docker
     restart: unless-stopped
+    networks:
+      network_service:
+        ipv4_address: 10.10.3.191
     environment:
       REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY: /var/lib/registry
       REGISTRY_HTTP_ADDR: :5000
+      REGISTRY_HTTP_SECRET: ${HTTP_SECRET}
+      REGISTRY_AUTH: htpasswd
+      REGISTRY_AUTH_HTPASSWD_REALM: Registry Realm
+      REGISTRY_AUTH_HTPASSWD_PATH: /auth/htpasswd
     volumes:
       - data:/var/lib/registry
+      - ./auth:/auth
     ports:
       - 5000:5000
+
+networks:
+  network_service:
+    external: true
 
 volumes:
   data:

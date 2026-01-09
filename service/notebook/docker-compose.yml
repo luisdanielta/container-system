@@ -1,6 +1,6 @@
 services:
   julia-jupyter:
-    image: quay.io/jupyter/julia-notebook:latest
+    image: quay.io/jupyter/julia-notebook:julia-1.12.1
     container_name: julia_jupyter
     restart: unless-stopped
     networks:
@@ -9,7 +9,10 @@ services:
     dns:
       - 10.10.3.200
     volumes:
+      - data:/home/jovyan
+      - opt:/opt
       - workspace_data:/home/jovyan/work
+      - ${HOME}/.gitconfig:/home/jovyan/.gitconfig:ro
     environment:
       JUPYTER_ENABLE_LAB: "yes"
     command: >
@@ -25,5 +28,9 @@ networks:
     external: true
 
 volumes:
+  data:
+    external: false
+  opt:
+    external: false
   workspace_data:
     external: true

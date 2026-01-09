@@ -2,7 +2,7 @@ services:
   chrome:
     image: kasmweb/chrome:1.14.0
     container_name: chrome
-    network_mode: "container:vpn-proxy"
+    #network_mode: "container:vpn-proxy"
     shm_size: 1024m
     devices:
       - /dev/dri/card0:/dev/dri/card0:rwm
@@ -15,17 +15,15 @@ services:
       - data:/home/kasm-user
       - workspace_data:/home/kasm-user/Downloads/workspace
     restart: unless-stopped
-    # ports:
-    #   - 3050:6901
-    # networks:
-    #   network_service:
-    #     ipv4_address: 10.10.3.18
-    # dns:
-    #   - 10.10.3.200
+    networks:
+      network_service:
+        ipv4_address: 10.10.3.18 # 6901
+    dns:
+      - 10.10.3.200
 
-# networks:
-#   network_service:
-#     external: true
+networks:
+  network_service:
+    external: true
 
 volumes:
   data:
