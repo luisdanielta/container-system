@@ -12,6 +12,8 @@ services:
   network:
     container_name: network-system
     image: router:v0.1
+    cap_add:
+      - NET_ADMIN
     build:
       context: .
       dockerfile: Dockerfile
