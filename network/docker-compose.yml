@@ -1,7 +1,20 @@
+x-net-common: &net_common
+  driver: bridge
+  driver_opts:
+    com.docker.network.driver.mtu: "1500"
+    com.docker.network.bridge.enable_icc: "true"            # Restrict inter-container communication
+    com.docker.network.bridge.enable_ip_masquerade: "false"   # Enable IP masquerading
+    com.docker.network.bridge.enable_ipv6: "false"          # Disable IPv6 support
+  labels:
+    com.example.owner: "platform"
+
 services:
   network:
     container_name: network-system
-    image: alpine:3.20
+    image: router:v0.1
+    build:
+      context: .
+      dockerfile: Dockerfile
     command: tail -f /dev/null # Keeps container alive to trigger network creation
     restart: unless-stopped
     networks:
@@ -20,42 +33,54 @@ services:
 
 networks:
   file-system:
-    driver: bridge
+    <<: *net_common
+    driver_opts:
+      com.docker.network.bridge.name: "br-fs"
     ipam:
       config:
         - subnet: 10.10.1.0/24
           gateway: 10.10.1.1
   
   db:
-    driver: bridge
+    <<: *net_common
+    driver_opts:
+      com.docker.network.bridge.name: "br-db"
     ipam:
       config:
         - subnet: 10.10.2.0/24
           gateway: 10.10.2.1
 
   service:
-    driver: bridge
+    <<: *net_common
+    driver_opts:
+      com.docker.network.bridge.name: "br-svc"
     ipam:
       config:
         - subnet: 10.10.3.0/24
           gateway: 10.10.3.1
 
   user:
-    driver: bridge
+    <<: *net_common
+    driver_opts:
+      com.docker.network.bridge.name: "br-user"
     ipam:
       config:
         - subnet: 10.10.4.0/24
           gateway: 10.10.4.1
 
   security:
-    driver: bridge
+    <<: *net_common
+    driver_opts:
+      com.docker.network.bridge.name: "br-sec"
     ipam:
       config:
         - subnet: 10.10.5.0/24
           gateway: 10.10.5.1
   
   shared:
-    driver: bridge
+    <<: *net_common
+    driver_opts:
+      com.docker.network.bridge.name: "br-shared"
     ipam:
       config:
         - subnet: 10.10.6.0/24
