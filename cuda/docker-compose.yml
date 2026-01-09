@@ -1,4 +1,3 @@
-version: '3.5'
 services:
   cuda-11:
     image: cuda:local-11
