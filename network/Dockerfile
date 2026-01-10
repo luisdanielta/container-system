@@ -5,3 +5,4 @@ RUN apk add --no-cache \
     nftables \
     && rm -rf /var/cache/apk/*
 
+COPY /conf/nftables.nft /etc/nftables.nft
