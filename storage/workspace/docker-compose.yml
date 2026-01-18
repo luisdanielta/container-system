@@ -1,9 +1,6 @@
 services:
   workspace:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: workspace:local
+    image: alpine:3.20
     container_name: workspace_maintainer
     restart: unless-stopped
     command: tail -f /dev/null
