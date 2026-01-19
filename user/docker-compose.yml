@@ -5,20 +5,26 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    environment:
-      - USERNAME=maintainer
     volumes:
-      - maintainer:/home/maintainer
-      - ubuntu_user_shared:/home/shared
+      - data:/home/${USERNAME}
+      - etc:/etc
       - /var/run/docker.sock:/var/run/docker.sock
       - /mnt:/mnt # disk mount from host
+      - shared:/home/shared
+    networks:
+      network_user:
+        ipv4_address: 10.10.4.18
     group_add:
       - "998"
 
-volumes:
-  maintainer:
-    external: false
-
-  # ubuntu_ this created for compose
-  ubuntu_user_shared:
+networks:
+  network_user:
     external: true
+
+volumes:
+  data:
+    external: false
+  etc:
+    external: false
+  shared:
+    external: false
