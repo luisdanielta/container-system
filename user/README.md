@@ -38,3 +38,20 @@ This container creates a non-root user defined via environment variables (UID/GI
 * Shared space with other services or containers (`/home/shared`)
 * Communication with the Docker daemon via its socket (`/var/run/docker.sock`)
 * Access to host-mounted directories or physical disks (`/mnt`)
+
+3. Configuración del servidor SSH
+
+En el servidor / contenedor, edita:
+
+/etc/ssh/sshd_config
+
+
+Asegúrate de tener:
+
+AllowAgentForwarding yes
+PubkeyAuthentication yes
+
+
+Reinicia SSH:
+
+service ssh restart
