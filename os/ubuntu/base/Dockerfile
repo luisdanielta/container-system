@@ -30,7 +30,7 @@ RUN mkdir -p /var/run/sshd && \
 
 # App installation
 RUN if [ "$app_essentials" = "true" ]; then \
-    apt-get update && apt-get install -y build-essential curl nano git wget htop \
+    apt-get update && apt-get install -y build-essential curl nano git git-lfs wget htop \
     && apt-get clean && rm -rf /var/lib/apt/lists/*; \
     echo "App essentials installed."; \
     else \
@@ -63,9 +63,7 @@ COPY --from=entrydata /entrypoint/start-dockerd.sh /usr/local/bin/start-dockerd.
 COPY supervisord.conf /etc/supervisord.conf
 
 # Configure
-RUN chmod +x /usr/local/bin/create-user.sh
 RUN chmod +x /usr/local/bin/start-dockerd.sh
 
 # Run
-ENTRYPOINT [ "/usr/local/bin/create-user.sh" ]
 CMD [ "supervisord", "-c", "/etc/supervisord.conf" ]
