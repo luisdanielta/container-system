@@ -2,6 +2,7 @@ services:
   maintainer:
     image: maintainer:local
     container_name: maintainer
+    restart: unless-stopped
     build:
       context: .
       dockerfile: Dockerfile
@@ -11,6 +12,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - /mnt:/mnt # disk mount from host
       - shared:/home/shared
+      - $SSH_AUTH_SOCK:/ssh-agent
     networks:
       network_user:
         ipv4_address: 10.10.4.18
