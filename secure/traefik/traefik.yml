@@ -1,0 +1,16 @@
+global:
+  checkNewVersion: false
+  sendAnonymousUsage: false
+
+api:
+  insecure: true
+
+entryPoints:
+  web:
+    address: :80
+
+  websecure:
+    address: :443
+
+providers:
+  docker: {}
