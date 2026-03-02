@@ -3,6 +3,8 @@ services:
     image: quay.io/jupyter/julia-notebook:julia-1.12.1
     container_name: julia_jupyter
     restart: unless-stopped
+    ports:
+      - 8981:8888
     networks:
       network_service:
         ipv4_address: 10.10.3.17 # :8888

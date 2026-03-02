@@ -1,6 +1,6 @@
 services:
   teable:
-    image: ghcr.io/teableio/teable:0.5.0-alpha-1.10.0-build.600-amd64
+    image: ghcr.io/teableio/teable:0.5.0-alpha-1.10.0-build.842-amd64
     restart: unless-stopped
     container_name: teable
     ports:

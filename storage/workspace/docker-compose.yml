@@ -3,10 +3,16 @@ services:
     image: alpine:3.20
     container_name: workspace_maintainer
     restart: unless-stopped
+    networks:
+      - network_service
     command: tail -f /dev/null
     volumes:
       - data:/data
       - research:/research
+
+networks:
+  network_service:
+    external: true
 
 volumes:
   research:

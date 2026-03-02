@@ -64,6 +64,7 @@ COPY supervisord.conf /etc/supervisord.conf
 
 # Configure
 RUN chmod +x /usr/local/bin/start-dockerd.sh
+RUN chmod +x /usr/local/bin/create-user.sh
 
 # Run
 CMD [ "supervisord", "-c", "/etc/supervisord.conf" ]

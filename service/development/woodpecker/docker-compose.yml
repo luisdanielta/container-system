@@ -27,6 +27,12 @@ services:
       - WOODPECKER_DATABASE_DATASOURCE=/var/lib/woodpecker/woodpecker.sqlite3
     volumes:
       - data:/var/lib/woodpecker
+    
+    labels:
+      - "traefik.enable=true"
+      # Configuración para la Web UI
+      - "traefik.http.routers.woodpecker.rule=Host(`ci.docker.local`)"
+      - "traefik.http.services.woodpecker.loadbalancer.server.port=8000"
 
   woodpecker-agent:
     image: woodpeckerci/woodpecker-agent:v3

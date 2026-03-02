@@ -4,7 +4,6 @@ services:
     container_name: vpn_wireguard
     cap_add:
       - NET_ADMIN
-      - SYS_MODULE
     environment:
       - PUID=1000
       - PGID=1000
@@ -24,6 +23,8 @@ services:
     dns:
       - 10.10.5.200 # Internal DNS server
     restart: unless-stopped
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1
     networks:
       network_security:
         ipv4_address: 10.10.5.4

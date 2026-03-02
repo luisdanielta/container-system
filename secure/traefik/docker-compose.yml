@@ -30,14 +30,12 @@ services:
       - "--api.dashboard=true"
       - "--api.insecure=false"
 
-      # Observability 
-      - "--log.level=INFO"
-      - "--accesslog=true"
-      - "--metrics.prometheus=true"
-    ports:
-      - "80:80"
-      - "443:443"
-      - "8080:8080"
+      - "--entrypoints.websecure.http.tls.certresolver=le"
+
+    # ports:
+    #   - "80:80"
+    #   - "443:443"
+    #   - "8080:8080"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - ./traefik.yml:/etc/traefik/traefik.yml:ro
