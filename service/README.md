@@ -1,4 +1,4 @@
-# Container System - Services Overview
+# Overview
 
 This directory contains the core services of the container ecosystem, organized by their primary function. The system is designed to be modular, leveraging shared infrastructure for networking and persistence.
 
