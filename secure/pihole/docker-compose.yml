@@ -5,7 +5,7 @@ services:
     environment:
       TZ: ${TZ}
       FTLCONF_webserver_api_password: ${API_PSWD}
-      FTLCONF_dns_upstreams: "10.10.5.201#5053"
+      FTLCONF_dns_upstreams: "10.10.5.201" # Unbound
       FTLCONF_dns_listeningMode: "all"
       SKIPGRAVITYONBOOT: true
     volumes:
@@ -17,10 +17,10 @@ services:
 
     # Expose DNS and DHCP ports to the host
     ports:
-      - 53:53 
+      - 53:53
       - 53:53/udp
       - 67:67/udp
-    
+
     networks:
       network_security:
         ipv4_address: 10.10.5.200 # :53/tcp/udp :67/udp :443/tcp :80/tcp
@@ -28,7 +28,7 @@ services:
         ipv4_address: 10.10.4.200
       network_service:
         ipv4_address: 10.10.3.200
-    
+
     # traefik labels for reverse proxy
     labels:
       - "traefik.enable=true"
