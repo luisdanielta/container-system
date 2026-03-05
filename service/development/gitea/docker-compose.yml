@@ -7,16 +7,20 @@ services:
       - USER_GID=1000
     restart: unless-stopped
     networks:
-      network_service:
-        ipv4_address: 10.10.3.10 # :3000 :22
+      - network_service # :3000 :22 Auto set ipv4
     volumes:
       - data:/data
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
-    ports:
-      - 3000:3000
     dns:
       - 10.10.3.200
+
+    # traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.gitea.rule=Host(`gitea.docker.local`)"
+      - "traefik.http.routers.gitea.entrypoints=web"
+      - "traefik.http.services.gitea.loadbalancer.server.port=3000"
 
 volumes:
   data:
