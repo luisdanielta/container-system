@@ -3,7 +3,7 @@
 This directory contains the Unbound Recursive DNS service, a critical foundational component of the container ecosystem's security layer. It acts as the secure upstream resolver for Pi-hole, handling actual DNS resolution directly against the root name servers to ensure privacy and DNSSEC validation.
 
 > [!IMPORTANT]
-> **Unbound must be deployed and running BEFORE starting Pi-hole.** Pi-hole relies entirely on Unbound for external DNS resolution.
+> **Unbound must be deployed and running before starting Pi-hole.** Pi-hole relies entirely on Unbound for external DNS resolution.
 
 ## System Architecture
 
