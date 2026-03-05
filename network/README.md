@@ -86,3 +86,17 @@ ip link show | grep br-<network_name>
 
 ### 4. Integration
 Once active, other services can connect to these networks using their specific subnets (e.g., `10.10.3.x` for general services).
+
+### 5. Optional: Exposing to Local Network (ipvlan)
+If you need containers to receive IP addresses directly from your home router's physical network (e.g., `192.168.1.x`), you can optionally create an `ipvlan` network. 
+
+> [!NOTE]
+> Ensure you replace the `subnet`, `gateway`, and `parent` interface (`enp1s0`) with the appropriate values for your real home network.
+
+```bash
+docker network create -d ipvlan \
+  --subnet=192.168.1.0/24 \
+  --gateway=192.168.1.1 \
+  -o parent=enp1s0 \
+  network_lan
+```
