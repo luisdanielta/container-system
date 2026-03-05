@@ -1,0 +1,31 @@
+services:
+  sonarqube:
+    image: sonarqube:25.12.0.117093-community
+    container_name: sonarqube
+    hostname: sonarqube
+    environment:
+      SONAR_JDBC_URL: jdbc:postgresql://10.10.3.153:5432/sonar
+      SONAR_JDBC_USERNAME: postgres_shared
+      SONAR_JDBC_PASSWORD: postgres_shared
+    volumes:
+      - data:/opt/sonarqube/data
+      - extensions:/opt/sonarqube/extensions
+      - logs:/opt/sonarqube/logs
+      - temp:/opt/sonarqube/temp
+    tmpfs:
+      - /tmp:size=256M,mode=1777
+    ports:
+      - "9000:9000"
+    networks:
+      - network_service
+    
+
+volumes:
+  data:
+  temp:
+  extensions:
+  logs:
+
+networks:
+  network_service:
+    external: true

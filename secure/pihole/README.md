@@ -4,3 +4,24 @@ Is required to disable systemd-resolved in your machine to use the DNS server of
 systemctl disable systemd-resolved.service
 systemctl stop systemd-resolved
 ```
+
+/etc/docker/daemon.json
+
+{
+  "dns": ["10.10.3.200"]
+}
+
+sudo systemctl restart docker
+
+## docker-wildcard.conf
+
+pihole-FTL --config misc.etc_dnsmasq_d true
+
+```bash
+sudo vi /etc/dnsmasq.d/05-docker-wildcard.conf
+address=/.docker.local/10.10.3.199 # traefik
+```
+
+```bash
+pihole reloaddns
+```
