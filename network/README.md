@@ -1,6 +1,6 @@
 # Overview
 
-This directory contains the core networking infrastructure of the container ecosystem. It manages a segmented bridge architecture designed for isolation, security, and static IP orchestration, acting as the foundation for all service-to-service and service-to-host communication.
+This directory contains the core networking infrastructure of the container ecosystem. It manages a segmented bridge architecture designed for isolation, security, and static IP orchestration, acting as the foundation for all service-to-service, service-to-host, and external network communication (e.g., providing DNS resolution for the local home router via the host's physical interface).
 
 ## System Architecture
 
@@ -23,6 +23,7 @@ graph TD
         S_SVC["service (10.10.3.0/24)"]
         S_USR["user (10.10.4.0/24)"]
         S_SEC["security (10.10.5.0/24)"]
+        PiH["Pi-hole DNS (10.10.3.200)"]
     end
 
     SYS --- NS
@@ -31,11 +32,16 @@ graph TD
     NS --- S_SVC
     NS --- S_USR
     NS --- S_SEC
+    
+    S_SVC -. "DNS Queries" .-> PiH
+    SYS -. "DNS Resolution" .-> PiH
+    ETH -. "Home Router DNS" .-> PiH
 
     style SYS fill:#f9f,stroke:#333,stroke-width:2px
     style NS fill:#81c784,stroke:#333,stroke-width:2px
     style S_SVC fill:#ffb74d,stroke:#333,stroke-width:2px
     style S_SEC fill:#64b5f6,stroke:#333,stroke-width:2px
+    style PiH fill:#81c784,stroke:#333,stroke-width:2px
 ```
 
 ### Key Architectural Patterns
@@ -43,7 +49,7 @@ graph TD
 1.  **System-OS Relationship**: The network stack is indispensable from the host OS. A critical requirement is enabling IP forwarding (`net.ipv4.ip_forward=1`) to allow the host to route traffic between the segmented Docker bridges.
 2.  **Segmentation by Function**: Services are isolated into tiers (Database, User, Security, etc.) to minimize the blast radius of any individual component.
 3.  **Static IP Orchestration**: All networks use a consistent `10.10.x.x` addressing scheme. The `network-system` container ensures these networks are persistent and provides a central anchor for the gates.
-4.  **DNS Integration**: Services within the ecosystem typically use the shared DNS resolver at `10.10.3.200` ([Pi-hole](file:///home/luist/docs/container-system/secure/pihole/README.md)) for service discovery.
+4.  **DNS Integration**: Services within the ecosystem typically use the shared DNS resolver at `10.10.3.200` (Pi-hole) for service discovery.
 
 ---
 
