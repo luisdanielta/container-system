@@ -24,6 +24,7 @@ graph TD
         S_USR["user (10.10.4.0/24)"]
         S_SEC["security (10.10.5.0/24)"]
         PiH["Pi-hole DNS (10.10.3.200)"]
+        Unb["Unbound DNS (10.10.5.201)"]
     end
 
     SYS --- NS
@@ -36,12 +37,15 @@ graph TD
     S_SVC -. "DNS Queries" .-> PiH
     SYS -. "DNS Resolution" .-> PiH
     ETH -. "Home Router DNS" .-> PiH
+    PiH -. "Upstream Queries" .-> Unb
+    PiH -. "Secure DNS" .-> S_SEC
 
     style SYS fill:#f9f,stroke:#333,stroke-width:2px
     style NS fill:#81c784,stroke:#333,stroke-width:2px
     style S_SVC fill:#ffb74d,stroke:#333,stroke-width:2px
     style S_SEC fill:#64b5f6,stroke:#333,stroke-width:2px
     style PiH fill:#81c784,stroke:#333,stroke-width:2px
+    style Unb fill:#64b5f6,stroke:#333,stroke-width:2px
 ```
 
 ### Key Architectural Patterns
@@ -54,6 +58,9 @@ graph TD
 ---
 
 ## Getting Started
+
+> [!WARNING]
+> **DNS Prerequisite (`network_security`)**: Before deploying Pi-hole or other service layer components, you MUST deploy `Unbound` (`10.10.5.201`). It acts as the foundational secure resolver for the ecosystem. Pi-hole will fail to resolve external queries without it.
 
 ### 1. Host Preparation (Indispensable)
 Ensure the host OS is configured to forward traffic between the network segments:
@@ -74,7 +81,7 @@ docker compose up -d
 ### 3. Verify Bridge Interfaces
 You can check the created bridges on the host system:
 ```bash
-ip link show | grep br-
+ip link show | grep br-<network_name>
 ```
 
 ### 4. Integration
