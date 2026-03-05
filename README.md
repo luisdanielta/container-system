@@ -8,11 +8,11 @@ The architecture is layered, building from foundational network and security inf
 ```mermaid
 graph TD
     subgraph "Host OS"
-        OS["Linux Server OS\n(IP Forwarding)"]
+        OS["Linux Server OS(IP Forwarding)"]
     end
 
     subgraph "Tier 1: Foundation (network/)"
-        NS["network-system\n(Bridge Orchestration)"]
+        NS["network-system(Bridge Orchestration)"]
     end
 
     subgraph "Tier 2: Trust & Access (secure/)"
