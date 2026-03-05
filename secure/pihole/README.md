@@ -36,7 +36,7 @@ graph TD
     - **`network_security`** (`br-sec` | `10.10.5.0/24`): Isolated segment for secure communication with Unbound (`10.10.5.201`). Pi-hole IP: `10.10.5.200`.
     - **`network_user`** (`br-user` | `10.10.4.0/24`): Access segment for user-facing services and clients. Pi-hole IP: `10.10.4.200`.
 3.  **Secure DNS Uplink**: All external resolution is proxied through Unbound, providing a DNSSEC-capable recursive resolver within the `security` network segment.
-4.  **Static IP Orchestration**: All IPs are statically assigned within the `10.10.x.x` range managed by the central [network system](file:///home/luist/docs/container-system/network/README.md).
+4.  **Static IP Orchestration**: All IPs are statically assigned within the `10.10.x.x` range managed by the central `network system`.
 
 ---
 
@@ -62,8 +62,9 @@ sudo systemctl restart docker
 ```
 
 ### 3. Deploy Service
-Ensure the shared [networks](file:///home/luist/docs/container-system/network) are running before starting Pi-hole:
+Ensure the shared `networks` are running before starting Pi-hole. Start by pulling the required image version:
 ```bash
+docker pull pihole/pihole:2025.07.1
 docker compose up -d
 ```
 
