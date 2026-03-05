@@ -1,123 +1,75 @@
-## Network System
+# Overview
 
-This document provides an overview of the network configuration managed by the `docker-compose.yml` file, detailing its structure, functionality, and intended use cases.
+This directory contains the core networking infrastructure of the container ecosystem. It manages a segmented bridge architecture designed for isolation, security, and static IP orchestration, acting as the foundation for all service-to-service and service-to-host communication.
 
-### Overview
+## System Architecture
 
-The `docker-compose.yml` file orchestrates the creation and management of multiple isolated Docker networks. These networks are designed to segment different tiers or types of services within an application, enhancing security, organization, and manageability. A central `network-system` container is maintained to ensure these networks are active and configured.
+The following diagram illustrates how the Network System integrates with the Host OS to manage segmented service layers:
 
-### Key Components
+```mermaid
+graph TD
+    subgraph "Host OS Layer"
+        SYS["system-os (IP Forwarding enabled)"]
+        ETH["Physical Interface (enp1s0/etc)"]
+    end
 
-#### Services
+    subgraph "Network Orchestration"
+        NS["network-system (Container)"]
+    end
 
-*   **`network-system`**:
-    *   **Image**: `router:v0.1` (or built from the local `Dockerfile`).
-    *   **Purpose**: This service acts as a placeholder to keep the defined Docker networks active. The `command: tail -f /dev/null` ensures the container runs indefinitely without consuming significant resources, effectively triggering the network setup.
-    *   **Capabilities**: `NET_ADMIN` is added to allow the container to perform network-related operations.
-    *   **Network Connections**: This service is explicitly connected to all defined networks (`file-system`, `db`, `service`, `user`, `security`, `shared`) with static IP addresses assigned to each.
+    subgraph "Network Segments (Bridges)"
+        S_FS["file-system (10.10.1.0/24)"]
+        S_DB["db (10.10.2.0/24)"]
+        S_SVC["service (10.10.3.0/24)"]
+        S_USR["user (10.10.4.0/24)"]
+        S_SEC["security (10.10.5.0/24)"]
+    end
 
-#### Networks
+    SYS --- NS
+    NS --- S_FS
+    NS --- S_DB
+    NS --- S_SVC
+    NS --- S_USR
+    NS --- S_SEC
 
-The `docker-compose.yml` defines six distinct Docker networks, each with its own subnet, gateway, and specific bridge interface. These networks leverage a common configuration (`x-net-common`) for base settings.
+    style SYS fill:#f9f,stroke:#333,stroke-width:2px
+    style NS fill:#81c784,stroke:#333,stroke-width:2px
+    style S_SVC fill:#ffb74d,stroke:#333,stroke-width:2px
+    style S_SEC fill:#64b5f6,stroke:#333,stroke-width:2px
+```
 
-*   **`file-system` Network**:
-    *   **Docker Compose Network Name**: `file-system`
-    *   **Bridge Name**: `br-fs`
-    *   **Subnet**: `10.10.1.0/24`
-    *   **Gateway**: `10.10.1.1`
-    *   **Purpose**: Likely intended for services that handle file storage or access.
+### Key Architectural Patterns
 
-*   **`db` Network**:
-    *   **Docker Compose Network Name**: `db`
-    *   **Bridge Name**: `br-db`
-    *   **Subnet**: `10.10.2.0/24`
-    *   **Gateway**: `10.10.2.1`
-    *   **Purpose**: Designed for database services, isolating them from other parts of the application.
-
-*   **`service` Network**:
-    *   **Docker Compose Network Name**: `service`
-    *   **Bridge Name**: `br-svc`
-    *   **Subnet**: `10.10.3.0/24`
-    *   **Gateway**: `10.10.3.1`
-    *   **Purpose**: Typically for application services or microservices that need to communicate with each other.
-
-*   **`user` Network**:
-    *   **Docker Compose Network Name**: `user`
-    *   **Bridge Name**: `br-user`
-    *   **Subnet**: `10.10.4.0/24`
-    *   **Gateway**: `10.10.4.1`
-    *   **Purpose**: Potentially for services related to user management or authentication.
-
-*   **`security` Network**:
-    *   **Docker Compose Network Name**: `security`
-    *   **Bridge Name**: `br-sec`
-    *   **Subnet**: `10.10.5.0/24`
-    *   **Gateway**: `10.10.5.1`
-    *   **Purpose**: Segregates security-sensitive components or services.
-
-*   **`shared` Network**:
-    *   **Docker Compose Network Name**: `shared`
-    *   **Bridge Name**: `br-shared`
-    *   **Subnet**: `10.10.6.0/24`
-    *   **Gateway**: `10.10.6.1`
-    *   **Purpose**: For components or services that need to be accessible across multiple segments or by multiple other services.
-
-#### Common Network Configuration (`x-net-common`)
-
-The `x-net-common` anchor defines a set of default configurations applied to most networks:
-*   **Driver**: `bridge`
-*   **MTU**: `1500`
-*   **Inter-Container Communication (ICC)**: Enabled (`true`), allowing containers on the *same* bridge network to communicate by default.
-*   **IP Masquerade**: Disabled (`false`), meaning containers on these networks will not automatically perform NAT for outbound traffic.
-*   **IPv6 Support**: Disabled (`false`).
-*   **Owner Label**: `com.example.owner: "platform"`
-
-### Functionality
-
-When `docker-compose up` is run, Docker processes the `docker-compose.yml` file:
-1.  It creates the defined networks (`file-system`, `db`, etc.) with their specified subnets and gateways.
-2.  It builds the `network-system` container from the `Dockerfile`.
-3.  It starts the `network-system` container and attaches it to all defined networks with the static IP addresses specified.
-4.  The `tail -f /dev/null` command keeps the `network-system` container running, which in turn keeps the networks alive.
-
-This setup allows other services, when defined in this compose file or added manually, to be attached to these specific, segmented networks, enabling controlled communication patterns.
-
-### Use Cases
-
-This network configuration is well-suited for:
-
-*   **Microservice Architectures**: Isolating different microservices into their own networks or tiers (e.g., API gateways, backend services, databases) for better security and scalability.
-*   **Multi-Tiered Applications**: Clearly defining network segments for presentation, application, and data layers.
-*   **Network Isolation for Security**: Restricting communication pathways between containers to only necessary connections, reducing the attack surface.
-*   **Development and Testing**: Providing a consistent and reproducible network environment for development teams and automated testing.
-*   **Custom Network Topologies**: Building complex network topologies within Docker that go beyond simple default bridge networks.
+1.  **System-OS Relationship**: The network stack is indispensable from the host OS. A critical requirement is enabling IP forwarding (`net.ipv4.ip_forward=1`) to allow the host to route traffic between the segmented Docker bridges.
+2.  **Segmentation by Function**: Services are isolated into tiers (Database, User, Security, etc.) to minimize the blast radius of any individual component.
+3.  **Static IP Orchestration**: All networks use a consistent `10.10.x.x` addressing scheme. The `network-system` container ensures these networks are persistent and provides a central anchor for the gates.
+4.  **DNS Integration**: Services within the ecosystem typically use the shared DNS resolver at `10.10.3.200` ([Pi-hole](file:///home/luist/docs/container-system/secure/pihole/README.md)) for service discovery.
 
 ---
 
-### Operational Notes
+## Getting Started
 
-The following commands and configurations are relevant for managing and inspecting the network system:
+### 1. Host Preparation (Indispensable)
+Ensure the host OS is configured to forward traffic between the network segments:
+```bash
+# Enable IP forwarding
+echo "net.ipv4.ip_forward = 1" | sudo tee -a /etc/sysctl.conf
+sudo sysctl -p
+```
 
-*   **List Network Interfaces**: To view the network interfaces on the host system:
-    ```bash
-    ip link show
-    ```
-*   **Enable IP Forwarding**: To allow the host to forward IP packets, which is crucial for routing between networks (especially if this container system is acting as a gateway or router):
-    ```bash
-    # Edit sysctl configuration file
-    sudo nano /etc/sysctl.conf
+### 2. Deploy Network Infrastructure
+To initialize the bridge interfaces and the orchestration container:
+1. Navigate to this directory.
+2. Run the deployment command:
+```bash
+docker compose up -d
+```
 
-    # Add or uncomment the following line:
-    # net.ipv4.ip_forward = 1
+### 3. Verify Bridge Interfaces
+You can check the created bridges on the host system:
+```bash
+ip link show | grep br-
+```
 
-    # Apply the changes
-    sudo sysctl -p
-    ```
-*   **Example Manual Network Creation**: This shows how a similar network could be created manually, often used for specific host-level integrations:
-    ```bash
-    docker network create --driver=ipvlan --subnet=192.168.1.0/24 --gateway=192.168.1.1 -o parent=enp1s0 network_lan
-    ```
-*   **Inspect Container IPs on a Network**: To view the IP addresses assigned to containers within a specific network (e.g., `network_service`):
-    ```bash
-    docker network inspect -f '{{range .Containers}}{{.Name}} {{.IPv4Address}}{{""}}{{end}}' network_service
-    ```
+### 4. Integration
+Once active, other services can connect to these networks using their specific subnets (e.g., `10.10.3.x` for general services).
