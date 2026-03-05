@@ -42,6 +42,11 @@ graph TD
 
 ## Getting Started
 
+### 0. Pull Image
+```bash
+docker pull pihole/pihole:2025.07.1
+```
+
 ### 1. Host Preparation
 Disable the local DNS resolver to free up port 53:
 ```bash
@@ -49,31 +54,32 @@ sudo systemctl disable systemd-resolved.service
 sudo systemctl stop systemd-resolved
 ```
 
-### 2. Docker Daemon Configuration
+### 2. Deploy Service
+Ensure the shared `networks` are running before starting Pi-hole.
+```bash
+docker compose up -d
+```
+
+### 3. Docker Daemon Configuration
 Update `/etc/docker/daemon.json` to make containers use Pi-hole by default (using the `service` network IP):
 ```json
 {
   "dns": ["10.10.3.200"]
 }
 ```
+
 Then restart Docker:
 ```bash
 sudo systemctl restart docker
 ```
 
-### 3. Deploy Service
-Ensure the shared `networks` are running before starting Pi-hole. Start by pulling the required image version:
-```bash
-docker pull pihole/pihole:2025.07.1
-docker compose up -d
-```
-
 ### 4. Wildcard DNS Setup
 To route local domains to Traefik, ensure the following configuration exists:
+
 ```bash
-# In /etc/dnsmasq.d/05-docker-wildcard.conf
-address=/.docker.local/10.10.3.199
+docker exec -it pihole sh -c "echo 'address=/.docker.local/10.10.3.199' > /etc/dnsmasq.d/05-docker-wildcard.conf"
 ```
+
 And reload the DNS:
 ```bash
 pihole reloaddns
