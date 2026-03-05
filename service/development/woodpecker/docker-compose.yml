@@ -3,35 +3,35 @@ services:
     image: woodpeckerci/woodpecker-server:v3
     container_name: woodpecker-server
     restart: always
-    ports:
-      - "8001:8000"
     networks:
       network_service:
         ipv4_address: 10.10.3.22
     environment:
       - WOODPECKER_OPEN=true
       - WOODPECKER_ADMIN=admin
-      - WOODPECKER_AGENT_SECRET=supersecret123
-      
-  
-      - WOODPECKER_HOST=http://10.10.3.22:8001
-      
-      - WOODPECKER_GITEA=true
-      - WOODPECKER_GITEA_URL=http://IP_DE_TU_GITEA:3000
-      - WOODPECKER_GITEA_CLIENT=tu_client_id_generado_en_gitea
-      - WOODPECKER_GITEA_SECRET=tu_client_secret_generado_en_gitea
+      - WOODPECKER_AGENT_SECRET=${AGENT_SECRET}
 
+      - WOODPECKER_GITEA=true
+      - WOODPECKER_GITEA_URL=http://gitea.docker.local
+      - WOODPECKER_GITEA_CLIENT=${GITEA_CLIENT}
+      - WOODPECKER_GITEA_SECRET=${GITEA_SECRET}
+
+      - WOODPECKER_HOST=http://woodpecker.docker.local
       - WOODPECKER_GRPC_ADDR=0.0.0.0:9000
       - WOODPECKER_SERVER_ADDR=0.0.0.0:8000
+
       - WOODPECKER_DATABASE_DRIVER=sqlite3
       - WOODPECKER_DATABASE_DATASOURCE=/var/lib/woodpecker/woodpecker.sqlite3
     volumes:
       - data:/var/lib/woodpecker
+    dns:
+      - 10.10.3.200
     
+    # traefik
     labels:
       - "traefik.enable=true"
-      # Configuración para la Web UI
-      - "traefik.http.routers.woodpecker.rule=Host(`ci.docker.local`)"
+      - "traefik.http.routers.woodpecker.rule=Host(`woodpecker.docker.local`)"
+      - "traefik.http.routers.woodpecker.entrypoints=web"
       - "traefik.http.services.woodpecker.loadbalancer.server.port=8000"
 
   woodpecker-agent:
@@ -49,6 +49,8 @@ services:
     networks:
       network_service:
         ipv4_address: 10.10.3.23
+    dns:
+      - 10.10.3.200
 
 volumes:
   data:
