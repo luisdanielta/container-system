@@ -74,9 +74,9 @@ The `container-system` repository is logically divided into specialized director
 |---|---|---|
 | [network](./network/) | Foundational bridge orchestration and IP assignment | `network-system` |
 | [secure](./secure/)  | Ecosystem trust layer (DNS, ingress, VPN, DDNS) | Pi-hole, Unbound, Traefik, WireGuard |
+| [service](./service/) | Core application, display, and utility containers| Gitea, Woodpecker |
 | [database](./database/) | Centralized database cluster servers | PostgreSQL, Redis, SQLite |
 | [storage](./storage/) | Centralized structured persistence | Minio, Registry |
-| [service](./service/) | Core application, display, and utility containers| Gitea, Woodpecker |
 | [observable](./observable/) | Monitoring, telemetry, and logging stacks | Grafana, Loki |
 | [backup](./backup/) | Automated snapshot and data safety systems | Basic |
 | [user](./user/) | End-user dev environments and personal workspaces | Maintenance |
