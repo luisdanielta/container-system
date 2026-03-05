@@ -5,6 +5,14 @@ systemctl disable systemd-resolved.service
 systemctl stop systemd-resolved
 ```
 
+/etc/docker/daemon.json
+
+{
+  "dns": ["10.10.3.200"]
+}
+
+sudo systemctl restart docker
+
 ## docker-wildcard.conf
 
 pihole-FTL --config misc.etc_dnsmasq_d true
