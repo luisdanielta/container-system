@@ -66,6 +66,26 @@ graph TD
 
 ---
 
+## Module Components
+
+The `container-system` repository is logically divided into specialized directories, each acting as a distinct module in the operating ecosystem:
+
+| Module | Core Purpose | Example Services / Tools |
+|---|---|---|
+| **`network/`** | Foundational bridge orchestration and IP assignment | `network-system` |
+| **`secure/`** | Ecosystem trust layer (DNS, ingress, VPN, DDNS) | Pi-hole, Unbound, Traefik, WireGuard |
+| **`database/`** | Centralized database cluster servers | PostgreSQL, Redis, SQLite |
+| **`storage/`** | Centralized structured persistence | Minio, Registry |
+| **`service/`** | Core application, display, and utility containers| Gitea, Woodpecker |
+| **`observable/`** | Monitoring, telemetry, and logging stacks | Grafana, Loki |
+| **`backup/`** | Automated snapshot and data safety systems | Basic |
+| **`user/`** | End-user dev environments and personal workspaces | Maintenance |
+| **`app/`** | Packaged languages/framework bases | Conda |
+| **`os/`** | Base OS foundation images for containers | Ubuntu Base |
+| **`terraform/`** | Infrastructure as Code provisioning | Automation |
+
+---
+
 ## Deployment Strategy
 
 Because the architecture relies on strict dependency chains, the system must be deployed in a specific order:
