@@ -72,17 +72,17 @@ The `container-system` repository is logically divided into specialized director
 
 | Module | Core Purpose | Example Services / Tools |
 |---|---|---|
-| **`network/`** | Foundational bridge orchestration and IP assignment | `network-system` |
-| **`secure/`** | Ecosystem trust layer (DNS, ingress, VPN, DDNS) | Pi-hole, Unbound, Traefik, WireGuard |
-| **`database/`** | Centralized database cluster servers | PostgreSQL, Redis, SQLite |
-| **`storage/`** | Centralized structured persistence | Minio, Registry |
-| **`service/`** | Core application, display, and utility containers| Gitea, Woodpecker |
-| **`observable/`** | Monitoring, telemetry, and logging stacks | Grafana, Loki |
-| **`backup/`** | Automated snapshot and data safety systems | Basic |
-| **`user/`** | End-user dev environments and personal workspaces | Maintenance |
-| **`app/`** | Packaged languages/framework bases | Conda |
-| **`os/`** | Base OS foundation images for containers | Ubuntu Base |
-| **`terraform/`** | Infrastructure as Code provisioning | Automation |
+| **[network](./network/)** | Foundational bridge orchestration and IP assignment | `network-system` |
+| **[secure](./secure/)**  | Ecosystem trust layer (DNS, ingress, VPN, DDNS) | Pi-hole, Unbound, Traefik, WireGuard |
+| **[database](./database/)** | Centralized database cluster servers | PostgreSQL, Redis, SQLite |
+| **[storage](./storage/)** | Centralized structured persistence | Minio, Registry |
+| **[service](./service/)** | Core application, display, and utility containers| Gitea, Woodpecker |
+| **[observable](./observable/)** | Monitoring, telemetry, and logging stacks | Grafana, Loki |
+| **[backup](./backup/)** | Automated snapshot and data safety systems | Basic |
+| **[user](./user/)** | End-user dev environments and personal workspaces | Maintenance |
+| **[app](./app/)** | Packaged languages/framework bases | Conda |
+| **[os](./os/)** | Base OS foundation images for containers | Ubuntu Base |
+| **[terraform](./terraform/)** | Infrastructure as Code provisioning | Automation |
 
 ---
 
