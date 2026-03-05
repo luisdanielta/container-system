@@ -1,0 +1,16 @@
+services:
+  nutch:
+    image: apache/nutch:release-1.20
+    container_name: nutch
+    tty: true
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    volumes:
+      - data:/usr/local/nutch
+      - ./nutch-site.xml:/usr/local/nutch/conf/nutch-site.xml:ro
+      - ./seed.txt:/usr/local/nutch/seed.txt:ro
+
+volumes:
+  data:
+    external: false

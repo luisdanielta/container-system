@@ -1,0 +1,20 @@
+services:
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:5.1.2
+    container_name: qbittorrent
+    network_mode: "container:vpn-proxy"
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Bogota
+      - WEBUI_PORT=8978
+    volumes:
+      - config:/config
+      - downloads:/downloads
+    restart: unless-stopped
+
+volumes:
+  config:
+    external: false
+  downloads:
+    external: false

@@ -1,0 +1,29 @@
+services:
+  pocketbase:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        pocket_ver: v0.27.1
+    image: pocketbase:local
+    container_name: pocketbase_local
+    restart: unless-stopped
+    volumes:
+      - sqlite_data:/data
+    environment:
+      - DATA_DIR=/data/pocketbase_local
+    ports:
+      - 8090:8090
+    networks:
+      network_service:
+        ipv4_address: 10.10.3.12
+    dns:
+      - 10.10.3.3
+
+networks:
+  network_service:
+    external: true
+
+volumes:
+  sqlite_data:
+    external: true
