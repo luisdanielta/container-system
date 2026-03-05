@@ -1,8 +1,6 @@
 # Overview
 
-The **container-system** is a comprehensive, modular container-native operating system architecture. It treats every infrastructure concern—from low-level networking and DNS resolution to application services and storage—as an isolated, versioned container. This approach ensures high portability, security, and consistent deployments across different environments.
-
-By decoupling the system into autonomous modules (e.g., `network`, `secure`, `service`, `storage`), it serves as a robust foundation for a wide array of use cases. Whether deploying a self-hosted homelab, a secure development environment, or a scalable backend infrastructure, the `container-system` provides the necessary core ecosystem to run services reliably.
+Built to integrate seamlessly with the host's containerization layer, `container-system` transforms standard Docker environments into a comprehensive operating ecosystem. It deconstructs traditional OS functions into autonomous modules (e.g., network, secure), running them as containers directly on the host. This approach provides a robust foundation for homelabs or production-grade backend infrastructure.
 
 ## System Architecture
 
