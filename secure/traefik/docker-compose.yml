@@ -7,8 +7,8 @@ services:
       - no-new-privileges:true
     networks:
       network_service:
-        ipv4_address: 10.10.3.10
-      
+        ipv4_address: 10.10.3.199
+
     command:
       # EntryPoints
       - "--entrypoints.web.address=:80"
@@ -41,7 +41,7 @@ services:
       - ./traefik.yml:/etc/traefik/traefik.yml:ro
       - ./dynamic:/etc/traefik/dynamic:ro
       - ./certs:/certs:ro
-    
+
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.dashboard.rule=Host(`dashboard.docker.local`)"
