@@ -3,16 +3,13 @@ services:
     container_name: dns_unbound
     image: mvance/unbound:1.21.1
     restart: unless-stopped
-    ports:
-      - 5053:53
-      - 5053:53/udp
     networks:
       network_security:
-        ipv4_address: 10.10.5.201
+        ipv4_address: 10.10.5.201 # :53/tcp/udp
     volumes:
       - data:/opt/unbound/etc/unbound/
     healthcheck:
-      test: ["NONE"]
+      test: [ "NONE" ]
 
 networks:
   network_security:
