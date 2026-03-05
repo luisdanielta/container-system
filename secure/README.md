@@ -93,12 +93,12 @@ container-system/
 ```
 
 **Dependency chain**:
-1. **`network/`** → Creates the bridge segments (`10.10.x.0/24`).
-2. **`secure/unbound`** → Provides foundational DNS resolution.
-3. **`secure/pihole`** → Builds on Unbound; provides ecosystem-wide DNS + ad blocking.
-4. **`secure/traefik`** → Builds on Pi-hole; routes `*.docker.local` to services via HTTPS.
-5. **`secure/wireguard`** & **`secure/gluetun`** → Use Pi-hole as internal DNS, operate on the security segment.
-6. **`secure/noip-duc`** → Keeps the external hostname updated for WireGuard remote access.
+1. **`network/`** Creates the bridge segments (`10.10.x.0/24`).
+2. **`secure/unbound`** Provides foundational DNS resolution.
+3. **`secure/pihole`** Builds on Unbound; provides ecosystem-wide DNS + ad blocking.
+4. **`secure/traefik`** Builds on Pi-hole; routes `*.docker.local` to services via HTTPS.
+5. **`secure/wireguard`** & **`secure/gluetun`** Use Pi-hole as internal DNS, operate on the security segment.
+6. **`secure/noip-duc`** Keeps the external hostname updated for WireGuard remote access.
 
 ---
 
