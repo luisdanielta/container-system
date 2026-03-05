@@ -9,5 +9,5 @@ terraform.tfstate.backup
 terraform/ubuntu/terraform.tfvars
 
 # Ignore Traefik cetificate files
-certs/*.crt
-certs/*.key
+*.crt
+*.key
