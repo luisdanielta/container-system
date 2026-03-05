@@ -44,9 +44,10 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - WOODPECKER_SERVER=10.10.3.22:9000
-      - WOODPECKER_AGENT_SECRET=supersecret123
+      - WOODPECKER_AGENT_SECRET=${AGENT_SECRET}
       - WOODPECKER_MAX_WORKFLOWS=2
       - WOODPECKER_BACKEND_DOCKER_NETWORK=network_service
+      - WOODPECKER_BACKEND=docker
     networks:
       network_service:
         ipv4_address: 10.10.3.23
