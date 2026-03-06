@@ -10,8 +10,6 @@ services:
       - NOIP_USERNAME=${NOIP_USERNAME}
       - NOIP_PASSWORD=${NOIP_PASSWORD}
       - NOIP_HOSTNAMES=${NOIP_HOSTNAMES}
-    dns:
-      - 10.10.5.200
 
 networks:
   network_security:

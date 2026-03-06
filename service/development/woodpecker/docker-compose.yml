@@ -24,8 +24,6 @@ services:
       - WOODPECKER_DATABASE_DATASOURCE=/var/lib/woodpecker/woodpecker.sqlite3
     volumes:
       - data:/var/lib/woodpecker
-    dns:
-      - 10.10.3.200
     
     # traefik
     labels:
@@ -51,8 +49,6 @@ services:
     networks:
       network_service:
         ipv4_address: 10.10.3.23
-    dns:
-      - 10.10.3.200
 
 volumes:
   data:

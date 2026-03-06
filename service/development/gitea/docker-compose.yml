@@ -12,8 +12,6 @@ services:
       - data:/data
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
-    dns:
-      - 10.10.3.200
 
     # traefik
     labels:
