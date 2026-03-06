@@ -8,8 +8,6 @@ services:
     networks:
       network_service:
         ipv4_address: 10.10.3.24
-    dns:
-      - 1.1.1.1
     restart: unless-stopped
     ports:
       - 7050:8080

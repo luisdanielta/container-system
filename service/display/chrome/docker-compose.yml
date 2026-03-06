@@ -18,8 +18,6 @@ services:
     networks:
       network_service:
         ipv4_address: 10.10.3.18 # 6901
-    dns:
-      - 10.10.3.200
 
 networks:
   network_service:
