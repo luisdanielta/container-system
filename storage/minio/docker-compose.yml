@@ -8,10 +8,14 @@ services:
       MINIO_ROOT_USER: ${MINIO_USER}
       MINIO_ROOT_PASSWORD: "${MINIO_PASSWORD}"
     networks:
-      network_service:
-        ipv4_address: 10.10.3.51 # 9000 & 9090
+      - network_service # 9000 & 9090
     volumes:
       - data:/data
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.minio.rule=Host(`minio.docker.local`)"
+      - "traefik.http.routers.minio.entrypoints=web"
+      - "traefik.http.services.minio.loadbalancer.server.port=9090"
 
 networks:
   network_service:
