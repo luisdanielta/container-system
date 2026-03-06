@@ -4,14 +4,13 @@ services:
     container_name: fluent-bit
     restart: unless-stopped
     networks:
-      network_service:
-        ipv4_address: 10.10.3.102
+      - network_service
     logging:
       driver: json-file
-    ports:
-      - 2020:2020    # Puerto HTTP (health / metrics)
-      - 24224:24224  # Puerto TCP input
-      - 24224:24224/udp
+    # ports:
+    #   - 2020:2020 # HTTP (health / metrics)
+    #   - 24224:24224 # TCP input
+    #   - 24224:24224/udp
     volumes:
       - /var/log:/var/log:ro
       - /proc:/host/proc:ro
