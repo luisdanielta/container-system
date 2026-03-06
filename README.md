@@ -29,7 +29,7 @@ graph TD
     end
 
     subgraph "Tier 4: Applications"
-        SVC["Application Services (service/)\n(Gitea, Metabase, etc.)"]
+        SVC["Application Services (service/)(Gitea, etc.)"]
         USER["User Environments (user/)"]
     end
 
