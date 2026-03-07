@@ -1,0 +1,17 @@
+services:
+  squid:
+    image: ubuntu/squid:5.2-22.04_beta
+    container_name: squid
+    restart: always
+    ports:
+      - "3128:3128"
+    volumes:
+      - ./squid.conf:/etc/squid/squid.conf
+    environment:
+      - TZ=${TZ}
+    networks:
+      - network_service
+
+networks:
+  network_service:
+    external: true
