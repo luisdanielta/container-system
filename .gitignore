@@ -11,3 +11,6 @@ terraform/ubuntu/terraform.tfvars
 # Ignore Traefik cetificate files
 *.crt
 *.key
+
+# AI
+.agents/
