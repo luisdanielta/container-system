@@ -1,63 +1,87 @@
-### 1. Environment Variables (`env`)
+# Ubuntu Variants — Terraform
 
-```hcl
-env = [
-  "USERNAME=${var.username}",
-  "PSWD=${var.password}"
-]
+This directory contains Terraform modules for Ubuntu-based containers. Each subdirectory is an independent Terraform workspace.
 
+## Directory Structure
+
+```text
+terraform/ubuntu/
+├── ubuntu-local/       # Base Ubuntu container (ubuntu:local image)
+│   ├── main.tf
+│   ├── variables.tf
+│   └── terraform.tfvars
+├── go-lang/            # Go development container (go-lang:local image)
+│   ├── main.tf
+│   ├── variables.tf
+│   └── terraform.tfvars.example
+└── python/             # Python development container (python:local image)
+    ├── main.tf
+    ├── variables.tf
+    └── terraform.tfvars.example
 ```
 
-In Docker Compose, you used `${USERNAME}`. In Terraform, we use **string interpolation**:
-
-* **`var.username`**: References the variable defined in your `variables.tf`.
-* **Interpolation `${}**`: Terraform evaluates the variable and injects it into the string.
-* **Security**: Because `var.password` is marked as `sensitive = true` in your variables file, Terraform will ensure that while the container gets the password, the value isn't printed in plain text to your console or logs when you run `terraform apply`.
+Image dependency order: **`ubuntu:local` must exist before building `go-lang:local` or `python:local`.**
 
 ---
 
-### 2. The Dynamic Volume Block (`dynamic "volumes"`)
+## Usage
 
-This is the "pro" way to handle the **YAML Anchors** you had in your Compose file. Instead of writing 9 separate `volumes {}` blocks, we use a loop.
+### 1. Build the base image first (`ubuntu-local`)
 
-#### How it works:
+```bash
+cd ubuntu-local
+terraform init
+terraform apply
+```
 
-1. **`for_each`**: This takes a **Map** (a collection of `Key = Value` pairs).
-* **The Key**: The path inside the container (e.g., `"/var/log"`).
-* **The Value**: The name of the Docker volume created by Terraform (e.g., `docker_volume.vols["user_log"].name`).
+### 2. Deploy a language variant
 
-
-2. **`content`**: This is the template that runs for every item in your map.
-3. **`volumes.key` and `volumes.value**`:
-* `volumes` is the name of the iterator (it matches the label of the dynamic block).
-* For the first loop, `key` is `"/home/shared"` and `value` is the actual name of your volume.
-
-
-
-#### Why is this better than YAML Anchors?
-
-* **Centralized Mapping**: If you need to change a mount point, you change it in one list.
-* **Variable Injection**: Notice `"/home/${var.username}"`. You can't easily do complex string manipulation inside a YAML anchor, but here it's native.
-* **Resource Dependency**: By referencing `docker_volume.vols[...]`, Terraform is smart enough to know it **must create the volumes first** before it tries to start the container.
+```bash
+cd go-lang
+cp terraform.tfvars.example terraform.tfvars
+# edit terraform.tfvars with your username, password, go_version
+terraform init
+terraform apply
+```
 
 ---
 
-### Comparison Table
+## Port / IP Assignments
 
-| Feature | Docker Compose (YAML) | Terraform (HCL) |
-| --- | --- | --- |
-| **Reuse Logic** | YAML Anchors (`&` and `*`) | `dynamic` blocks + `for_each` |
-| **Logic** | Static (Hard to manipulate) | Programmatic (Supports functions/loops) |
-| **Dependencies** | Implicit (Docker handles order) | Explicit (Terraform builds a dependency graph) |
-| **Validation** | Fails at runtime | Fails during `plan` (before deployment) |
+| Module        | SSH Port | Container IP  |
+| ------------- | -------- | ------------- |
+| `ubuntu-local` | `2220`  | `10.10.4.10`  |
+| `go-lang`      | `2221`  | `10.10.4.11`  |
+| `python`       | `2222`  | `10.10.4.12`  |
 
 ---
 
-### One Small Detail: `user_cache`
+## `/etc` Volume Persistence
 
-In your map, you are mounting the same volume (`user_cache`) to **two different locations**:
+`VOLUME ["/etc"]` is declared in the base Dockerfile and the `etc` Docker volume is mounted at runtime.
 
-1. `/var/cache`
-2. `/home/${var.username}/.cache`
+**How it works:**
+- **First boot**: Docker copies the full image `/etc` into the new volume. SSH host keys, `sshd_config`, `passwd`, `sudoers` etc. are all seeded from the image.
+- **Subsequent boots**: The volume is mounted as-is. `/etc` state (user accounts, SSH config) **persists across container restarts and rebuilds**.
 
-This is perfectly valid in Docker! Both paths in the container will point to the exact same storage space on your disk.
+**User creation via `create-user.sh`** writes to `/etc/passwd`, `/etc/group`, and `/etc/sudoers.d/` — since these are inside the `/etc` volume, the user survives restarts without needing `docker exec`.
+
+**Important caveat:** SSH config changes made in the `Dockerfile` (`RUN echo "..." >> /etc/ssh/sshd_config`) apply only at image build time and are seeded into the volume only on the **first boot** of a new volume. If you need to update SSH config after volume creation, patch it with:
+
+```bash
+docker exec ubuntu-os bash -c 'echo "AllowAgentForwarding yes" >> /etc/ssh/sshd_config && kill -HUP $(pgrep sshd)'
+```
+
+---
+
+## Prerequisites
+
+- [Terraform](https://developer.hashicorp.com/terraform/downloads) (v1.0+)
+- Docker Engine
+- External Docker networks:
+
+```bash
+docker network create network_user
+docker network create network_shared
+docker network create network_service
+```

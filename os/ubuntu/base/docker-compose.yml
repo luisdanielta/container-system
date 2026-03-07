@@ -1,7 +1,8 @@
 services:
+  # Restart compose orchestrator
   ubuntu:
     image: ubuntu:local
-    container_name: ubuntu-maintainer
+    container_name: ubuntu-maint
     privileged: true
     build:
       context: .
@@ -9,10 +10,10 @@ services:
       args:
         docker_app: true
         app_essentials: true
-  
+
   ubuntu-nd:
-    image: ubuntu:not-docker
-    container_name: ubuntu-nd
+    image: ubuntu:local-nd
+    container_name: ubuntu-nd-maint
     build:
       context: .
       dockerfile: Dockerfile
