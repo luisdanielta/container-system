@@ -43,4 +43,4 @@ fi
 
 . "$BASHRC/.bash_profile"
 
-exec "$@"
+exit 0

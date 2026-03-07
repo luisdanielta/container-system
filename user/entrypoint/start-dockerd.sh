@@ -1,6 +1,13 @@
 #!/usr/bin/env bash
 set -e
 
+# Prevent docker daemon from starting if not found
+if ! command -v dockerd &>/dev/null; then
+  echo "[INFO] dockerd not found. Skipping Docker daemon startup."
+  exit 0
+fi
+
+# Start docker daemon
 echo "[INFO] Starting Docker daemon..."
 dockerd > /var/log/dockerd.log 2>&1 &
 
