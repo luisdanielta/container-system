@@ -4,13 +4,18 @@ services:
     container_name: squid
     restart: always
     ports:
-      - "3128:3128"
+      - 3128:3128
     volumes:
       - ./squid.conf:/etc/squid/squid.conf
+      - data:/var/spool/squid
     environment:
       - TZ=${TZ}
     networks:
       - network_service
+
+volumes:
+  data:
+
 
 networks:
   network_service:
