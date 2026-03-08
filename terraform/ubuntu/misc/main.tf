@@ -69,7 +69,7 @@ resource "docker_container" "ubuntu_os" {
     external = 2022
   }
 
-  # System Mappings
+  # System
   dynamic "volumes" {
     for_each = {
       # User specific mappings
