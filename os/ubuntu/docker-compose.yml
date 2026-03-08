@@ -1,0 +1,25 @@
+services:
+  base:
+    build:
+      context: base
+    image: ubuntu:local
+    dns:
+      - 1.1.1.1
+
+  docker:
+    build:
+      context: docker
+    image: ubuntu:docker
+    depends_on:
+      - base
+    dns:
+      - 1.1.1.1
+
+  go-lang:
+    build:
+      context: go-lang
+    image: ubuntu:golang
+    depends_on:
+      - docker
+    dns:
+      - 1.1.1.1

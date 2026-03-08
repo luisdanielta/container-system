@@ -1,8 +1,8 @@
-FROM ubuntu:docker
+FROM ubuntu:local
 
 ARG go_version=1.24
 
-RUN add-apt-repository ppa:longsleep/golang-backports && \
+RUN add-apt-repository -y ppa:longsleep/golang-backports && \
     apt-get update && \
     apt-get install -y golang-${go_version} && \
     rm -rf /var/lib/apt/lists/*

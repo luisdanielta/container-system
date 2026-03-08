@@ -10,6 +10,7 @@ terraform {
 variable "usernames" {
   type        = list(string)
   description = "List of usernames to create in the container"
+  default     = ["dev"]
 }
 
 locals {
@@ -40,16 +41,11 @@ resource "docker_volume" "user_data" {
 resource "docker_container" "ubuntu_os" {
 
   for_each = toset(local.user_list)
-  name     = "ubuntu_os_${each.value}"
+  name     = "ubuntu_os_${each.value}_${index(local.user_list, each.value)}"
 
   image      = docker_image.ubuntu_local.image_id
   restart    = "unless-stopped"
   privileged = true
-
-  ports {
-    internal = 22
-    external = 2220 + index(local.user_list, each.value)
-  }
 
   # System Mappings
   dynamic "volumes" {
