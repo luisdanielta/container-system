@@ -6,7 +6,8 @@ RUN apt-get update && \
     ca-certificates \
     gnupg \
     lsb-release \
-    software-properties-common
+    software-properties-common \
+    build-essential
 
 RUN mkdir -p /etc/apt/keyrings && \
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg && \
