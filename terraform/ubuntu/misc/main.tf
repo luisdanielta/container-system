@@ -25,7 +25,7 @@ locals {
 }
 
 resource "docker_image" "ubuntu_misc" {
-  name         = "ubuntu:misc"
+  name         = "ubuntu:tool"
   keep_locally = true
 }
 
