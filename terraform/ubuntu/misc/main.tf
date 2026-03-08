@@ -77,6 +77,7 @@ resource "docker_container" "ubuntu_os" {
       "/home/${each.value}"        = docker_volume.user_data[each.value].name
       "/home/${each.value}/.cache" = docker_volume.vols["user_cache"].name
     }
+
     content {
       container_path = volumes.key
       volume_name    = volumes.value
