@@ -1,4 +1,5 @@
 ARG ubuntu_ver=22.04
+FROM entrypoint:local AS entrydata
 FROM ubuntu:${ubuntu_ver} AS base
 LABEL description="Ubuntu, passwordless sudo, and SSH user via ENV."
 
@@ -6,20 +7,6 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 ARG TZ
 ENV TZ=${TZ}
-
-# Define non-root user credentials for a secure development environment.
-ARG USERNAME=dev
-ENV USERNAME=$USERNAME
-ARG USER_UID=1000
-ARG USER_GID=$USER_UID
-
-# Create non-root user and configure passwordless sudo.
-RUN groupadd --gid $USER_GID $USERNAME \
-    && useradd --uid $USER_UID --gid $USER_GID -m -s /bin/bash $USERNAME \
-    && apt-get update \
-    && apt-get install -y sudo \
-    && echo "$USERNAME ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/$USERNAME \
-    && chmod 0440 /etc/sudoers.d/$USERNAME
 
 # SSH configuration
 RUN apt-get update -y && apt-get install -y --no-install-recommends \
@@ -37,7 +24,10 @@ RUN apt-get update && apt-get install -y build-essential curl nano git git-lfs w
     && apt-get clean && rm -rf /var/lib/apt/lists/*;
 
 # Copy entrypoint scripts and configuration
+COPY --from=entrydata /entrypoint/create-user.sh /usr/local/bin/create-user.sh
 COPY supervisord.conf /etc/supervisord.conf
+
+RUN chmod +x /usr/local/bin/create-user.sh
 
 # Run
 EXPOSE 22

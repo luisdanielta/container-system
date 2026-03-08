@@ -17,8 +17,8 @@ if ! id "${USERNAME}" >/dev/null 2>&1; then
     --shell /bin/bash \
     "${USERNAME}"
 
-  echo "${USERNAME}:${PSWD}" | chpasswd
-  echo "Password for user ${USERNAME} set to ${PSWD}"
+  echo "${USERNAME}:${PASSWORD}" | chpasswd
+  echo "Password for user ${USERNAME} set to ${PASSWORD}"
 
   echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" > "/etc/sudoers.d/${USERNAME}"
   chmod 0440 "/etc/sudoers.d/${USERNAME}"

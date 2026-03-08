@@ -1,7 +1,7 @@
 services:
   entrypoint:
     image: entrypoint:local
-    container_name: entrypoint-maintainer
+    container_name: entrypoint
     build:
       context: .
       dockerfile: Dockerfile

@@ -13,8 +13,15 @@ variable "usernames" {
   default     = ["dev"]
 }
 
+variable "passwords" {
+  type      = list(string)
+  sensitive = true
+  default   = ["dev"]
+}
+
 locals {
-  user_list = [for u in var.usernames : trimspace(u) if trimspace(u) != ""]
+  user_list     = [for u in var.usernames : trimspace(u) if trimspace(u) != ""]
+  password_list = [for i, u in var.usernames : trimspace(element(var.passwords, i)) if trimspace(u) != ""]
 
   volumes = [
     "user_data", "dind", "etc", "user_tmp",
@@ -46,6 +53,11 @@ resource "docker_container" "ubuntu_os" {
   image      = docker_image.ubuntu_local.image_id
   restart    = "unless-stopped"
   privileged = true
+
+  env = [
+    "USERNAME=${each.value}",
+    "PASSWORD=${element(local.password_list, index(local.user_list, each.value))}"
+  ]
 
   # System Mappings
   dynamic "volumes" {
