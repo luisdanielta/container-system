@@ -1,4 +1,4 @@
-FROM ubuntu:local
+FROM ubuntu:docker
 
 ARG go_version=1.24
 

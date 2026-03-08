@@ -29,8 +29,8 @@ locals {
   ]
 }
 
-resource "docker_image" "ubuntu_local" {
-  name         = "ubuntu:local"
+resource "docker_image" "ubuntu_misc" {
+  name         = "ubuntu:misc"
   keep_locally = true
 }
 
@@ -50,9 +50,9 @@ resource "docker_container" "ubuntu_os" {
   for_each = toset(local.user_list)
   name     = "ubuntu_os_${each.value}_${index(local.user_list, each.value)}"
 
-  image   = docker_image.ubuntu_local.image_id
-  restart = "unless-stopped"
-  # privileged = true # Docker daemon
+  image      = docker_image.ubuntu_misc.image_id
+  restart    = "unless-stopped"
+  privileged = true # Docker daemon
 
   # Supervisor entrypoint
   entrypoint = ["supervisord"]

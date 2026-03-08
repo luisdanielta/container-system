@@ -3,8 +3,6 @@ services:
     build:
       context: base
     image: ubuntu:local
-    dns:
-      - 1.1.1.1
 
   docker:
     build:
@@ -12,8 +10,6 @@ services:
     image: ubuntu:docker
     depends_on:
       - base
-    dns:
-      - 1.1.1.1
 
   go-lang:
     build:
@@ -21,5 +17,10 @@ services:
     image: ubuntu:golang
     depends_on:
       - docker
-    dns:
-      - 1.1.1.1
+
+  misc:
+    build:
+      context: misc
+    image: ubuntu:misc
+    depends_on:
+      - go-lang

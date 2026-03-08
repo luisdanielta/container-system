@@ -25,8 +25,8 @@ RUN apt-get update && \
 RUN apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-RUN groupadd docker || true
-RUN usermod -aG docker $USERNAME || true
+# Copy entrypoint scripts and configuration
+COPY --from=entrydata /entrypoint/start-dockerd.sh /usr/local/bin/start-dockerd.sh
 
-ENTRYPOINT ["supervisord"]
-CMD ["-c", "/etc/supervisord.conf"]
+# Configure
+RUN chmod +x /usr/local/bin/start-dockerd.sh
