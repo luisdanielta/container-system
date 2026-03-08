@@ -9,18 +9,20 @@ services:
       context: docker
     image: ubuntu:docker
     depends_on:
-      - base
-
-  go-lang:
-    build:
-      context: go-lang
-    image: ubuntu:golang
-    depends_on:
-      - docker
+      - misc
 
   misc:
     build:
       context: misc
+      target: misc
     image: ubuntu:misc
     depends_on:
-      - go-lang
+      - base
+
+  tool:
+    build:
+      context: misc
+      target: tool
+    image: ubuntu:tool
+    depends_on:
+      - misc
