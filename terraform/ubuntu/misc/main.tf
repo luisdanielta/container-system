@@ -24,8 +24,7 @@ locals {
   password_list = [for i, u in var.usernames : trimspace(element(var.passwords, i)) if trimspace(u) != ""]
 
   volumes = [
-    "user_data", "dind", "etc", "user_tmp",
-    "user_log", "user_cache", "user_shared", "user_opt"
+    "tmp", "log", "cache", "shared", "opt"
   ]
 }
 
@@ -39,9 +38,20 @@ resource "docker_volume" "vols" {
   name     = "ubuntu_${each.value}"
 }
 
-resource "docker_volume" "user_data" {
+# --- User Volumes ---
+resource "docker_volume" "user_home" {
   for_each = toset(local.user_list)
-  name     = "ubuntu_data_${each.value}"
+  name     = "ubuntu_home_${each.value}"
+}
+
+resource "docker_volume" "user_dind" {
+  for_each = toset(local.user_list)
+  name     = "ubuntu_dind_${each.value}"
+}
+
+resource "docker_volume" "user_etc" {
+  for_each = toset(local.user_list)
+  name     = "ubuntu_etc_${each.value}"
 }
 
 # --- Service Definition ---
@@ -66,16 +76,17 @@ resource "docker_container" "ubuntu_os" {
   # System Mappings
   dynamic "volumes" {
     for_each = {
-      "/home/shared"    = docker_volume.vols["user_shared"].name
-      "/tmp"            = docker_volume.vols["user_tmp"].name
-      "/var/log"        = docker_volume.vols["user_log"].name
-      "/var/cache"      = docker_volume.vols["user_cache"].name
-      "/opt"            = docker_volume.vols["user_opt"].name
-      "/var/lib/docker" = docker_volume.vols["dind"].name
-      "/etc"            = docker_volume.vols["etc"].name
+      "/home/shared" = docker_volume.vols["shared"].name
+      "/tmp"         = docker_volume.vols["tmp"].name
+      "/var/log"     = docker_volume.vols["log"].name
+      "/var/cache"   = docker_volume.vols["cache"].name
+      "/opt"         = docker_volume.vols["opt"].name
+
       # User specific mappings
-      "/home/${each.value}"        = docker_volume.user_data[each.value].name
-      "/home/${each.value}/.cache" = docker_volume.vols["user_cache"].name
+      "/home/${each.value}"        = docker_volume.user_home[each.value].name
+      "/home/${each.value}/.cache" = docker_volume.vols["cache"].name
+      "/var/lib/docker"            = docker_volume.user_dind[each.value].name
+      "/etc"                       = docker_volume.user_etc[each.value].name
     }
 
     content {
