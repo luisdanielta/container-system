@@ -22,10 +22,6 @@ variable "passwords" {
 locals {
   user_list     = [for u in var.usernames : trimspace(u) if trimspace(u) != ""]
   password_list = [for i, u in var.usernames : trimspace(element(var.passwords, i)) if trimspace(u) != ""]
-
-  volumes = [
-    "tmp", "log", "cache", "shared", "opt"
-  ]
 }
 
 resource "docker_image" "ubuntu_local" {
@@ -33,20 +29,10 @@ resource "docker_image" "ubuntu_local" {
   keep_locally = true
 }
 
-resource "docker_volume" "vols" {
-  for_each = toset(local.volumes)
-  name     = "ubuntu_${each.value}"
-}
-
 # --- User Volumes ---
 resource "docker_volume" "user_home" {
   for_each = toset(local.user_list)
   name     = "ubuntu_home_${each.value}"
-}
-
-resource "docker_volume" "user_dind" {
-  for_each = toset(local.user_list)
-  name     = "ubuntu_dind_${each.value}"
 }
 
 resource "docker_volume" "user_etc" {
@@ -76,17 +62,9 @@ resource "docker_container" "ubuntu_os" {
   # System Mappings
   dynamic "volumes" {
     for_each = {
-      "/home/shared" = docker_volume.vols["shared"].name
-      "/tmp"         = docker_volume.vols["tmp"].name
-      "/var/log"     = docker_volume.vols["log"].name
-      "/var/cache"   = docker_volume.vols["cache"].name
-      "/opt"         = docker_volume.vols["opt"].name
-
       # User specific mappings
-      "/home/${each.value}"        = docker_volume.user_home[each.value].name
-      "/home/${each.value}/.cache" = docker_volume.vols["cache"].name
-      "/var/lib/docker"            = docker_volume.user_dind[each.value].name
-      "/etc"                       = docker_volume.user_etc[each.value].name
+      "/home/${each.value}" = docker_volume.user_home[each.value].name
+      "/etc"                = docker_volume.user_etc[each.value].name
     }
 
     content {
