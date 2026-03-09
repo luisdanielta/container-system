@@ -26,10 +26,8 @@ services:
     sysctls:
       - net.ipv4.conf.all.src_valid_mark=1
     networks:
-      network_security:
-        ipv4_address: 10.10.5.4
-      network_service:
-        ipv4_address: 10.10.3.4
+      - network_security
+      - network_service
 
 networks:
   network_security:

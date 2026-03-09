@@ -58,10 +58,15 @@ Ensure the following services are running before deploying Traefik:
 If you don't already have certificates in the `certs/` directory, generate them:
 ```bash
 openssl req -x509 -nodes -days 365 \
-  -newkey rsa:2048 \
+  -newkey rsa:2048 -sha256 \
   -keyout certs/local.key \
   -out certs/local.crt \
-  -subj "/CN=*.docker.local"
+  -subj "/CN=*.docker.local" \
+  -addext "subjectAltName=DNS:*.docker.local"
+```
+
+``` bash
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -sha256 -keyout certs/local.key -out certs/local.crt -subj "/CN=*.docker.local" -addext "subjectAltName=DNS:*.docker.local"
 ```
 
 ### 3. Deploy Service

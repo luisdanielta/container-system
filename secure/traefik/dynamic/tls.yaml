@@ -1,4 +1,9 @@
 tls:
   certificates:
-    - certFile: /certs/local.crt
-      keyFile:  /certs/local.key
+    - certFile: /etc/traefik/certs/local.crt
+      keyFile: /etc/traefik/certs/local.key
+  stores:
+    default:
+      defaultCertificate:
+        certFile: /etc/traefik/certs/local.crt
+        keyFile: /etc/traefik/certs/local.key
