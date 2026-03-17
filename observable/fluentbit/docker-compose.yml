@@ -5,22 +5,14 @@ services:
     restart: unless-stopped
     networks:
       - network_service
-    logging:
-      driver: json-file
-    # ports:
-    #   - 2020:2020 # HTTP (health / metrics)
-    #   - 24224:24224 # TCP input
-    #   - 24224:24224/udp
     volumes:
       - /var/log:/var/log:ro
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
       - /etc/machine-id:/etc/machine-id:ro
+      - ./parsers.conf:/fluent-bit/etc/parsers.conf:ro
       - ./fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf:ro
-    environment:
-      - FLB_HTTP_SERVER=On
-      - FLB_HTTP_LISTEN=0.0.0.0
-      - FLB_HTTP_PORT=2020
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
 
 networks:
   network_service:
