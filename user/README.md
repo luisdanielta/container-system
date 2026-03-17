@@ -45,13 +45,14 @@ En el servidor / contenedor, edita:
 
 /etc/ssh/sshd_config
 
-
 Asegúrate de tener:
-
 AllowAgentForwarding yes
 PubkeyAuthentication yes
 
 
 Reinicia SSH:
-
 service ssh restart
+
+sudo nano /etc/docker/daemon.json
+
+sudo systemctl restart docker
