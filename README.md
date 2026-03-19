@@ -1,5 +1,6 @@
 # Overview
-Designed to run directly on the host's container runtime layer, `container-system` transforms standard Docker environments into a comprehensive operating ecosystem. It deconstructs traditional OS functions into autonomous modules (e.g., network, secure), running them as containers directly on the host. This approach provides a robust foundation for homelabs or production-grade backend infrastructure.
+Designed to run directly on the host's container runtime layer, `container-system` transforms standard Docker environments into a comprehensive operating ecosystem.
+This approach provides a robust foundation for homelabs or production-grade backend infrastructure.
 
 ## System Architecture
 
