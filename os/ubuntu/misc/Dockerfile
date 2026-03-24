@@ -64,6 +64,7 @@ COPY --from=misc-go /usr/lib/go-${go_version} /usr/lib/go
 ENV GOROOT=/usr/lib/go
 ENV GOPATH=/go
 ENV PATH=$GOROOT/bin:$GOPATH/bin:$PATH
+RUN ln -s /usr/lib/go/bin/go /usr/bin/go
 
 # Python
 COPY --from=misc-py /usr/bin/python${py_version} /usr/bin/python${py_version}
