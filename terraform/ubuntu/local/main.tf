@@ -65,6 +65,7 @@ resource "docker_container" "ubuntu_os" {
       # User specific mappings
       "/home/${each.value}" = docker_volume.user_home[each.value].name
       "/etc"                = docker_volume.user_etc[each.value].name
+      "/etc/ssh/user-ca-keys.pem" = abspath("${path.module}/user-ca-keys.pem")
     }
 
     content {
