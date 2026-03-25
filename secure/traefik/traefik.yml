@@ -3,17 +3,40 @@ global:
   sendAnonymousUsage: false
 
 api:
-  insecure: true
+  dashboard: true
+  insecure: false
 
 entryPoints:
   web:
-    address: :80
-
+    address: ":80"
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+          permanent: true
   websecure:
-    address: :443
+    address: ":443"
+    http:
+      tls:
+        certResolver: step-ca-resolver
+  ssh-tls:
+    address: ":22"
 
 providers:
-  docker: {}
-  file:
-    directory: /etc/traefik/dynamic
-    watch: true
+  docker:
+    exposedByDefault: false
+    network: network_service
+
+certificatesResolvers:
+  step-ca-resolver:
+    acme:
+      email: admin@docker.local
+      storage: /acme.json
+      caServer: "https://10.10.3.198:9000/acme/acme/directory"
+      httpChallenge:
+        entryPoint: web
+
+serversTransport:
+  rootCAs:
+    - /etc/ssl/step-ca/certs/root_ca.crt
