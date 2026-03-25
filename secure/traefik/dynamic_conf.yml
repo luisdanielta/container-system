@@ -1,6 +1,0 @@
-http:
-  serversTransports:
-    stepcaTransport:
-      insecureSkipVerify: false
-      rootCAs:
-        - /etc/ssl/step-ca/certs/root_ca.crt

@@ -16,7 +16,6 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - step-ca_data:/etc/ssl/step-ca:ro
       - ./traefik.yml:/etc/traefik/traefik.yml:ro
-      - ./dynamic_conf.yml:/etc/traefik/dynamic_conf.yml:ro
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.dashboard.rule=Host(`dashboard.docker.local`)"
