@@ -86,4 +86,5 @@ resource "docker_container" "ubuntu_os" {
 
   # Network stack
   networks_advanced { name = "network_service" }
+  dns = ["10.10.3.200"]
 }
