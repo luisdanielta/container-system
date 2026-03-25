@@ -17,7 +17,8 @@ RUN apt-get update -y && apt-get install -y --no-install-recommends \
 RUN mkdir -p /var/run/sshd && \
     ssh-keygen -A && \
     echo "PermitRootLogin no" >> /etc/ssh/sshd_config && \
-    echo "PasswordAuthentication yes" >> /etc/ssh/sshd_config
+    echo "PasswordAuthentication yes" >> /etc/ssh/sshd_config \
+    echo "TrustedUserCAKeys /etc/ssh/user-ca-keys.pem" >> /etc/ssh/sshd_config
 
 # App installation
 RUN apt-get update && apt-get install -y curl nano git git-lfs wget htop \
