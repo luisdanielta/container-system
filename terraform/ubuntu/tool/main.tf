@@ -64,11 +64,6 @@ resource "docker_container" "ubuntu_os" {
     "PASSWORD=${element(local.password_list, index(local.user_list, each.value))}"
   ]
 
-  ports {
-    internal = 22
-    external = 2022
-  }
-
   # System
   dynamic "volumes" {
     for_each = {
