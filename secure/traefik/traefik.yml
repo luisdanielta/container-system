@@ -27,6 +27,9 @@ providers:
   docker:
     exposedByDefault: false
     network: network_service
+  file:
+    filename: /etc/traefik/dynamic_conf.yml
+    watch: true
 
 certificatesResolvers:
   step-ca-resolver:
@@ -38,5 +41,6 @@ certificatesResolvers:
         entryPoint: web
 
 serversTransport:
+  insecureSkipVerify: false
   rootCAs:
     - /etc/ssl/step-ca/certs/root_ca.crt

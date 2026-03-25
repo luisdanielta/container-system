@@ -11,26 +11,12 @@ services:
     environment:
       - LEGO_CA_CERTIFICATES=/etc/ssl/step-ca/certs/root_ca.crt
     command:
-      # EntryPoints
-      - "--entrypoints.ssh-tls.address=:22"
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.websecure.address=:443"
-      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
-      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
-      - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
-      # Providers
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--providers.docker.network=network_service"
-      # API & Dashboard
-      - "--api.dashboard=true"
-      - "--api.insecure=false"
-      # TLS
       - "--configFile=/etc/traefik/traefik.yml"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - step-ca_data:/etc/ssl/step-ca:ro
       - ./traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./dynamic_conf.yml:/etc/traefik/dynamic_conf.yml:ro
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.dashboard.rule=Host(`dashboard.docker.local`)"
