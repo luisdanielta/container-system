@@ -49,7 +49,7 @@ resource "docker_volume" "user_etc" {
 resource "docker_container" "ubuntu_os" {
 
   for_each = toset(local.user_list)
-  name = "ubuntu_os_${each.value}_${index(local.user_list, each.value)}"
+  name     = "ubuntu_os_${each.value}_${index(local.user_list, each.value)}"
 
   image   = docker_image.ubuntu_tool.image_id
   restart = "unless-stopped"
@@ -68,9 +68,10 @@ resource "docker_container" "ubuntu_os" {
   dynamic "volumes" {
     for_each = {
       # User specific mappings
-      "/home/${each.value}" = docker_volume.user_home[each.value].name
-      "/var/lib/docker"     = docker_volume.user_dind[each.value].name
-      "/etc"                = docker_volume.user_etc[each.value].name
+      "/home/${each.value}"       = docker_volume.user_home[each.value].name
+      "/var/lib/docker"           = docker_volume.user_dind[each.value].name
+      "/etc"                      = docker_volume.user_etc[each.value].name
+      "/etc/ssh/user-ca-keys.pem" = abspath("${path.module}/user-ca-keys.pem")
     }
 
     content {
