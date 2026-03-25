@@ -49,7 +49,7 @@ resource "docker_volume" "user_etc" {
 resource "docker_container" "ubuntu_os" {
 
   for_each = toset(local.user_list)
-  name     = "ubuntu_os_${each.value}_${index(local.user_list, each.value)}"
+  name = "ubuntu_os_${each.value}_${index(local.user_list, each.value)}"
 
   image   = docker_image.ubuntu_tool.image_id
   restart = "unless-stopped"
@@ -82,4 +82,35 @@ resource "docker_container" "ubuntu_os" {
   # Network stack
   networks_advanced { name = "network_service" }
   dns = ["10.10.3.200"]
+
+  # Etiquetas de Traefik dinámicas
+  labels {
+    label = "traefik.enable"
+    value = "true"
+  }
+
+  labels {
+    label = "traefik.tcp.routers.${each.value}-ssh.rule"
+    value = "HostSNI(`${each.value}.docker.local`)"
+  }
+
+  labels {
+    label = "traefik.tcp.routers.${each.value}-ssh.entrypoints"
+    value = "ssh-tls"
+  }
+
+  labels {
+    label = "traefik.tcp.routers.${each.value}-ssh.tls"
+    value = "true"
+  }
+
+  labels {
+    label = "traefik.tcp.routers.${each.value}-ssh.tls.certresolver"
+    value = "step-ca-resolver"
+  }
+
+  labels {
+    label = "traefik.tcp.services.${each.value}-ssh.loadbalancer.server.port"
+    value = "22"
+  }
 }
