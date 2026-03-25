@@ -31,7 +31,6 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - step-ca_data:/etc/ssl/step-ca:ro
       - ./traefik.yml:/etc/traefik/traefik.yml:ro
-      - ./acme.json:/acme.json
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.dashboard.rule=Host(`dashboard.docker.local`)"
