@@ -17,8 +17,15 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.gitea.rule=Host(`gitea.docker.local`)"
-      - "traefik.http.routers.gitea.entrypoints=web"
+      - "traefik.http.routers.gitea.entrypoints=websecure"
+      - "traefik.http.routers.gitea.tls=true"
       - "traefik.http.services.gitea.loadbalancer.server.port=3000"
+      # SSH
+      - "traefik.tcp.routers.gitea-ssh.rule=HostSNI(`gitea.docker.local`)"
+      - "traefik.tcp.routers.gitea-ssh.entrypoints=ssh-tls"
+      - "traefik.tcp.routers.gitea-ssh.tls=true"
+      - "traefik.tcp.routers.gitea-ssh.tls.certresolver=step-ca-resolver"
+      - "traefik.tcp.services.gitea-ssh.loadbalancer.server.port=22"
 
 volumes:
   data:
