@@ -72,6 +72,7 @@ resource "docker_container" "ubuntu_os" {
       "/var/lib/docker"           = docker_volume.user_dind[each.value].name
       "/etc"                      = docker_volume.user_etc[each.value].name
       "/etc/ssh/user-ca-keys.pem" = abspath("${path.module}/user-ca-keys.pem")
+      "/home/${each.value}/workspace" = "workspace_data" # External volume
     }
 
     content {
@@ -79,7 +80,6 @@ resource "docker_container" "ubuntu_os" {
       volume_name    = volumes.value
     }
   }
-
   # Network stack
   networks_advanced { name = "network_service" }
   dns = ["10.10.3.200"]
