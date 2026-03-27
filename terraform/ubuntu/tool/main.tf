@@ -64,7 +64,7 @@ resource "docker_container" "ubuntu_os" {
     "PASSWORD=${element(local.password_list, index(local.user_list, each.value))}"
   ]
 
-  # System
+  # System volumes
   dynamic "volumes" {
     for_each = {
       # User specific mappings
@@ -84,7 +84,7 @@ resource "docker_container" "ubuntu_os" {
   networks_advanced { name = "network_service" }
   dns = ["10.10.3.200"]
 
-  # Etiquetas de Traefik dinámicas
+  # SSH TLS Routing for Traefik
   labels {
     label = "traefik.enable"
     value = "true"
