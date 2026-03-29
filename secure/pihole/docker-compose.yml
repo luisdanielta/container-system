@@ -10,9 +10,11 @@ services:
       SKIPGRAVITYONBOOT: true
     volumes:
       - data:/etc/pihole/
-      - dnsmasq:/etc/dnsmasq.d/
+      - ./dnsmasq:/etc/dnsmasq.d/
     cap_add:
       - NET_ADMIN
+      - SYS_NICE
+      - SYS_TIME
     restart: unless-stopped
 
     # Expose DNS and DHCP ports to the host
