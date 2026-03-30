@@ -46,5 +46,5 @@ networks:
 volumes:
   data:
     external: false
-  dnsmasq:
-    external: false
+  # dnsmasq:
+    # external: false
