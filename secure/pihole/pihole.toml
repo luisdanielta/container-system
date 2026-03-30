@@ -1,0 +1,209 @@
+[dns]
+  upstreams = [
+    "10.10.5.201"
+  ] ### CHANGED (env), default = []
+  CNAMEdeepInspect = true
+  blockESNI = true
+  EDNS0ECS = true
+  ignoreLocalhost = false
+  showDNSSEC = true
+  analyzeOnlyAandAAAA = false
+  piholePTR = "PI.HOLE"
+  replyWhenBusy = "ALLOW"
+  blockTTL = 2
+  hosts = []
+  domainNeeded = false
+  expandHosts = false
+  bogusPriv = true
+  dnssec = false
+  interface = ""
+  hostRecord = ""
+  listeningMode = "ALL" ### CHANGED (env), default = "LOCAL"
+  queryLogging = true
+  cnameRecords = []
+  port = 53
+  localise = true
+  revServers = []
+  [dns.domain]
+    name = "lan"
+    local = true
+  [dns.cache]
+    size = 10000
+    optimizer = 3600
+    upstreamBlockedTTL = 86400
+    rrtype = "ANY"
+  [dns.blocking]
+    active = true
+    mode = "NULL"
+    edns = "TEXT"
+  [dns.specialDomains]
+    mozillaCanary = true
+    iCloudPrivateRelay = true
+    designatedResolver = true
+    [dns.reply.host]
+      force4 = false
+      IPv4 = ""
+      force6 = false
+      IPv6 = ""
+    [dns.reply.blocking]
+      force4 = false
+      IPv4 = ""
+      force6 = false
+      IPv6 = ""
+  [dns.rateLimit]
+    count = 1000
+    interval = 60
+
+[dhcp]
+  active = true
+  start = "192.168.1.2"
+  end = "192.168.1.100"
+  router = "192.168.1.1"
+  netmask = "255.255.255.0"
+  leaseTime = "24h"
+  ipv6 = false
+  rapidCommit = true
+  multiDNS = false
+  logging = false
+  ignoreUnknownClients = false
+  hosts = []
+  [ntp.ipv4]
+    active = true
+    address = ""
+  [ntp.ipv6]
+    active = true
+    address = ""
+  [ntp.sync]
+    active = true
+    server = "pool.ntp.org"
+    interval = 3600
+    count = 8
+    [ntp.sync.rtc]
+      set = false
+      device = ""
+      utc = true
+
+[resolver]
+  resolveIPv4 = true
+  resolveIPv6 = true
+  networkNames = true
+  refreshNames = "IPV4_ONLY"
+
+[database]
+  DBimport = true
+  maxDBdays = 91
+  DBinterval = 60
+  useWAL = true
+  forceDisk = false
+  [database.network]
+    parseARPcache = true
+    expire = 91
+
+[webserver]
+  domain = "pi.hole"
+  acl = ""
+  port = "80o,443os,[::]:80o,[::]:443os"
+  threads = 50
+  headers = [
+    "X-DNS-Prefetch-Control: off",
+    "Content-Security-Policy: default-src 'none'; connect-src 'self'; font-src 'self'; frame-ancestors 'none'; img-src 'self'; manifest-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'",
+    "X-Frame-Options: DENY",
+    "X-XSS-Protection: 0",
+    "X-Content-Type-Options: nosniff",
+    "Referrer-Policy: strict-origin-when-cross-origin"
+  ]
+  serve_all = false
+  advancedOpts = []
+  [webserver.session]
+    timeout = 1800
+    restore = true
+  [webserver.tls]
+    cert = "/etc/pihole/tls.pem"
+    validity = 47
+  [webserver.paths]
+    webroot = "/var/www/html"
+    webhome = "/admin/"
+    prefix = ""
+  [webserver.interface]
+    boxed = true
+    theme = "default-auto"
+  [webserver.api]
+    max_sessions = 16
+    prettyJSON = false
+    pwhash = "$BALLOON-SHA256$v=1$s=1024,t=32$2NFbLiL9lMZU1jD+QR+26Q==$V9bPAztKOsinKbZvmraXqlv6ATgfWTNEkyNCGwiwtWg=" ### CHANGED, default = ""
+    totp_secret = ""
+    app_pwhash = ""
+    app_sudo = false
+    cli_pw = true
+    excludeClients = []
+    excludeDomains = []
+    maxHistory = 86400
+    maxClients = 10
+    client_history_global_max = true
+    allow_destructive = true
+    [webserver.api.temp]
+      limit = 60.000000
+      unit = "C"
+
+[files]
+  pid = "/run/pihole-FTL.pid"
+  database = "/etc/pihole/pihole-FTL.db"
+  tmp_db = "/etc/pihole/pihole-tmp.db"
+  gravity = "/etc/pihole/gravity.db"
+  gravity_tmp = "/tmp"
+  macvendor = "/macvendor.db" ### CHANGED, default = "/etc/pihole/macvendor.db"
+  pcap = ""
+  [files.log]
+    ftl = "/var/log/pihole/FTL.log"
+    dnsmasq = "/var/log/pihole/pihole.log"
+    webserver = "/var/log/pihole/webserver.log"
+
+[misc]
+  privacylevel = 0
+  delay_startup = 0
+  nice = -10
+  addr2line = true
+  etc_dnsmasq_d = false
+  dnsmasq_lines = ["address=/.docker.local/10.10.3.199"] ### CUSTOM
+  extraLogging = false
+  readOnly = false
+  normalizeCPU = true
+  hide_dnsmasq_warn = false
+  hide_connection_error = false
+  [misc.check]
+    load = true
+    shmem = 90
+    disk = 90
+
+[debug]
+  database = false
+  networking = false
+  locks = false
+  queries = false
+  flags = false
+  shmem = false
+  gc = false
+  arp = false
+  regex = false
+  api = false
+  tls = false
+  overtime = false
+  status = false
+  caps = false
+  dnssec = false
+  vectors = false
+  resolver = false
+  edns0 = false
+  clients = false
+  aliasclients = false
+  events = false
+  helper = false
+  config = false
+  inotify = false
+  webserver = false
+  extra = false
+  reserved = false
+  ntp = false
+  netlink = false
+  timing = false
+  all = false

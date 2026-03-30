@@ -1,6 +1,6 @@
 services:
-  unbound:
-    container_name: dns_unbound
+  dns_recursive:
+    container_name: unbound
     image: mvance/unbound:1.21.1
     restart: unless-stopped
     networks:

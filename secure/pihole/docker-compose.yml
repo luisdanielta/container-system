@@ -1,27 +1,23 @@
 services:
-  pihole:
-    container_name: dns_pihole
-    image: pihole/pihole:2025.07.1
+  dns:
+    image: pihole/pihole:2026.02.0
+    container_name: pihole
+    restart: unless-stopped
+
     environment:
       TZ: ${TZ}
-      FTLCONF_webserver_api_password: ${API_PSWD}
-      FTLCONF_dns_upstreams: "10.10.5.201" # Unbound
-      FTLCONF_dns_listeningMode: "all"
+      FTLCONF_webserver_api_password: ${PASSWORD}
       SKIPGRAVITYONBOOT: true
+    
     volumes:
+      - ./pihole.toml:/etc/pihole/pihole.toml
       - data:/etc/pihole/
-      - ./dnsmasq:/etc/dnsmasq.d/
+      # - dnsmasq:/etc/dnsmasq.d/
+    
     cap_add:
       - NET_ADMIN
       - SYS_NICE
       - SYS_TIME
-    restart: unless-stopped
-
-    # Expose DNS and DHCP ports to the host
-    ports:
-      - 53:53
-      - 53:53/udp
-      - 67:67/udp
 
     networks:
       network_security:
@@ -31,7 +27,6 @@ services:
       network_service:
         ipv4_address: 10.10.3.200
 
-    # traefik labels for reverse proxy
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.pihole.rule=Host(`pi.docker.local`)"
