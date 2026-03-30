@@ -12,3 +12,10 @@ Start-Service ssh-agent
 ssh-add .\id_ecdsa
 
 ForwardAgent yes
+
+Host name
+    HostName
+    User
+    ProxyCommand ncat --ssl %h %p
+
+ssh -o "ProxyCommand=ncat --ssl %h %p" geltdro@geltdro.docker.local
