@@ -11,7 +11,7 @@ RUN apt-get update && \
 RUN apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-ARG go_version=1.24
+ARG go_version=1.24.1
 ARG py_version=3.12
 ARG gcc_version=10
 ARG node_version=20
@@ -19,10 +19,9 @@ ARG git_bug_version=0.8.0
 
 # Go
 FROM misc AS misc-go
-RUN add-apt-repository -y ppa:longsleep/golang-backports && \
-    apt-get update && \
-    apt-get install -y golang-${go_version} \
-    && rm -rf /var/lib/apt/lists/*
+RUN wget https://go.dev/dl/go${go_version}.linux-amd64.tar.gz -O /tmp/go.tar.gz && \
+    tar -C /usr/local -xzf /tmp/go.tar.gz && \
+    rm /tmp/go.tar.gz
 
 # Python python3 -m venv lab --without-pip
 # curl -sS https://bootstrap.pypa.io/get-pip.py | /lab/bin/python3 -m ensurepip --upgrade
@@ -60,11 +59,11 @@ RUN apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
 # Go
-COPY --from=misc-go /usr/lib/go-${go_version} /usr/lib/go
-ENV GOROOT=/usr/lib/go
+COPY --from=misc-go /usr/local/go /usr/local/go
+ENV GOROOT=/usr/local/go
 ENV GOPATH=/go
 ENV PATH=$GOROOT/bin:$GOPATH/bin:$PATH
-RUN ln -s /usr/lib/go/bin/go /usr/bin/go
+RUN ln -s /usr/local/go/bin/go /usr/bin/go
 
 # Python
 COPY --from=misc-py /usr/bin/python${py_version} /usr/bin/python${py_version}
