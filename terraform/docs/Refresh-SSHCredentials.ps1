@@ -1,28 +1,32 @@
 # -----------------------------------------------------------------------------
 # Script: Refresh-SSHCredentials.ps1
-# Purpose: Automated Step CA signing & SSH-agent injection
-# Logic: Single-entry password, Multi-target execution, SOLID structure
+# Logic: Total Silence Wrapper for noisy CLI tools (step, ssh-add)
 # -----------------------------------------------------------------------------
 
 $ErrorActionPreference = "Stop"
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+$env:STEP_LOGGER_LEVEL = "error"
 
-# --- 1. Configuration (The "System" Setup) ---
-# Decoupling data from logic. Add new targets here.
+# --- 1. Configuration ---
 $CertTargets = @(
-    @{
-        Identity    = "luist@192.168.1.250"
-        KeyPath     = "$HOME\.ssh\id_ecdsa"
-        Provisioner = "admin"
-    },
-    @{
-        Identity    = "geltdro@geltdro.docker.local"
-        KeyPath     = "$HOME\.ssh\id_tool"
-        Provisioner = "admin"
-    }
+    @{ Identity = "luist@192.168.1.250"; KeyPath = "$HOME\.ssh\id_ecdsa"; Provisioner = "admin" },
+    @{ Identity = "geltdro@geltdro.docker.local"; KeyPath = "$HOME\.ssh\id_tool"; Provisioner = "admin" }
 )
 
-# --- 2. Core Functions ---
+# --- 2. Helper: The Silencer ---
+# Esta función ejecuta un comando y evita que PowerShell entre en pánico por stderr
+function Invoke-SilentBinary {
+    param ([ScriptBlock]$Code)
+    $oldEAP = $ErrorActionPreference
+    $ErrorActionPreference = "SilentlyContinue"
+    try {
+        & $Code 2>$null | Out-Null
+    } finally {
+        $ErrorActionPreference = $oldEAP
+    }
+}
 
+# --- 3. Core Function ---
 function Invoke-StepSigning {
     param (
         [Parameter(Mandatory=$true)] [string]$Password,
@@ -31,33 +35,34 @@ function Invoke-StepSigning {
 
     Write-Host "-> Signing: $($Target.Identity)" -ForegroundColor Cyan
     
-    # Base command construction
-    $cmd = "step ssh certificate $($Target.Identity) $($Target.KeyPath) --password-file=-"
-    if ($Target.Provisioner) {
-        $cmd += " --provisioner $($Target.Provisioner)"
+    $identity = $Target.Identity
+    $keyPath  = $Target.KeyPath
+    $prov     = if ($Target.Provisioner) { "--provisioner $($Target.Provisioner)" } else { "" }
+
+    # Paso 1: Firmar el certificado (usando CMD para bypass total)
+    Invoke-SilentBinary {
+        $Password | cmd /c "step ssh certificate $identity `"$keyPath`" --password-file=- --force $prov 2>NUL"
     }
 
-    # Execute signing via stdin pipe
-    $Password | iex $cmd
-
-    # Feature: Add to SSH Agent
-    if ($LASTEXITCODE -eq 0) {
-        ssh-add $Target.KeyPath
+    # Paso 2: Validar y añadir al agente
+    if ($LASTEXITCODE -eq 0 -and (Test-Path "$keyPath-cert.pub")) {
+        # Aquí es donde fallaba antes: ssh-add es ruidoso
+        Invoke-SilentBinary { & ssh-add $keyPath }
         Write-Host "   [Success] Signed and added to agent." -ForegroundColor Green
+    } else {
+        Write-Host "   [Error] Process failed (Exit Code: $LASTEXITCODE)." -ForegroundColor Red
     }
 }
 
-# --- 3. Main Execution Flow ---
-
+# --- 4. Main ---
 function Main {
-    # Ensure ssh-agent is running in Windows
     if (!(Get-Service ssh-agent | Where-Object { $_.Status -eq 'Running' })) {
-        Write-Host "Starting SSH Agent..." -ForegroundColor Yellow
         Start-Service ssh-agent
     }
 
-    # Single point of entry for password (Energy Management)
     $securePass = Read-Host "Master Step Password" -AsSecureString
+    if ($null -eq $securePass) { return }
+
     $passPtr = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($securePass)
     $plainPass = [System.Runtime.InteropServices.Marshal]::PtrToStringBSTR($passPtr)
 
@@ -65,14 +70,11 @@ function Main {
         foreach ($target in $CertTargets) {
             Invoke-StepSigning -Password $plainPass -Target $target
         }
-    }
-    finally {
-        # Security: Wipe plain text from memory immediately
+    } finally {
         [System.Runtime.InteropServices.Marshal]::ZeroFreeBSTR($passPtr)
-        $plainPass = $null
+        $plainPass = ""
         Write-Host "Memory cleared. Session secure." -ForegroundColor Gray
     }
 }
 
-# Run it
 Main
