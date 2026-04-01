@@ -12,7 +12,7 @@ $CertTargets = @(
     @{
         Identity    = "luist@192.168.1.250"
         KeyPath     = "$HOME\.ssh\id_ecdsa"
-        Provisioner = $null
+        Provisioner = "admin"
     },
     @{
         Identity    = "geltdro@geltdro.docker.local"
