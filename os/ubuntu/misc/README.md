@@ -1,6 +1,9 @@
+sudo chmod 644 ~/.bashrc
+sudo chown geltdro:geltdro ~/.bashrc
 
 ## Golang dev
-export PATH="/go/bin:/usr/local/go/bin:$PATH"
+echo 'export PATH="$HOME/go/bin:/usr/local/go/bin:$PATH"' >> ~/.bashrc
+source ~/.bashrc
 
 # Install fixed Air version for reproducible builds.
 go install github.com/air-verse/air@v1.61.7
