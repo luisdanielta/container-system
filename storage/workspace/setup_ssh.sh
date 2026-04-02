@@ -1,55 +1,54 @@
 #!/bin/sh
 # -----------------------------------------------------------------------------
 # @file         setup_ssh.sh
-# @description  Automated SSH Infrastructure Initializer.
-#               Ensures persistence, modular configuration, and strict 
-#               security permissions for multi-provider SSH identities.
-# @version      1.0.0
+# @description  Automated SSH Infrastructure Initializer (Multi-user Access Ver.)
+#               Balances SSH security requirements with data accessibility.
+# @version      1.1.0
 # -----------------------------------------------------------------------------
 
-# -e: Exit immediately if a command exits with a non-zero status.
-# -u: Treat unset variables as an error.
 set -eu
 
 # Configuration Constants
 readonly sshDir="/data/.ssh"
 readonly configFile="$sshDir/config"
+readonly UID_USER=1000
+readonly GID_USER=1000
 
 ##
-# @function    bootstrapFileSystem
-# @description Creates the required directory hierarchy and applies 
-#              baseline security folders permissions (700).
+# @function     bootstrapFileSystem
+# @description  Creates directories and applies 755 (Read/Execute for others)
+#               allowing users to enter and list files.
 ##
 bootstrapFileSystem() {
-    # POSIX-compliant iteration over required subdirectories
-    # Note: 'local' is supported by BusyBox Ash.
     local targetDirs="$sshDir $sshDir/github $sshDir/gitea"
 
     for dir in $targetDirs; do
         if [ ! -d "$dir" ]; then
             mkdir -p "$dir"
         fi
-        chmod 700 "$dir"
+        # 755: Dueño (rwx), Grupo/Otros (r-x). Crucial para que puedan "entrar".
+        chmod 755 "$dir"
     done
 
-    # Ensure the master config file exists with restricted permissions (600)
+    # Aseguramos propiedad del proceso principal
+    chown -R $UID_USER:$GID_USER "$sshDir"
+
     if [ ! -f "$configFile" ]; then
         touch "$configFile"
-        chmod 600 "$configFile"
+        # 644: Permite que otros usuarios lean la config de SSH
+        chmod 644 "$configFile"
+        chown $UID_USER:$GID_USER "$configFile"
     fi
 }
 
 ##
-# @function    registerSshInclude
-# @description Idempotently registers modular configuration files into 
-#              the main SSH config using the 'Include' directive.
-# @param       $1  The absolute path of the config file to include.
+# @function     registerSshInclude
+# @description  Idempotently registers modular configuration files.
 ##
 registerSshInclude() {
     local includePath="$1"
     local includeLine="Include $includePath"
 
-    # Search for the exact line to avoid duplicate entries on restart
     if ! grep -qxF "$includeLine" "$configFile" 2>/dev/null; then
         echo "$includeLine" >> "$configFile"
         printf "SSH_SYSTEM: Registered include for %s\n" "$includePath"
@@ -57,34 +56,40 @@ registerSshInclude() {
 }
 
 ##
-# @function    hardenKeyPermissions
-# @description Recursively finds and restricts permissions for any file 
-#              prefixed with 'id_' to 600 (Owner Read/Write only).
+# @function     hardenKeyPermissions
+# @description  The core logic: Protects private keys while keeping public
+#               data accessible.
 ##
 hardenKeyPermissions() {
-    # Using 'find' handles empty directories gracefully in Ash
-    find "$sshDir" -type f -name "id_*" -exec chmod 600 {} +
+    # 1. LLAVES PRIVADAS: Deben ser 600. Si son más abiertas, SSH fallará.
+    # Buscamos archivos que empiecen con id_ y NO terminen en .pub
+    find "$sshDir" -type f -name "id_*" ! -name "*.pub" -exec chmod 600 {} +
+
+    # 2. LLAVES PÚBLICAS Y CONFIGS MODULARES: 644 (Lectura para todos)
+    # Esto permite que tus usuarios copien la data sin problemas.
+    find "$sshDir" -type f -name "*.pub" -exec chmod 644 {} +
+    find "$sshDir" -type f -name "config" -exec chmod 644 {} +
+
+    # Asegurar que el dueño sigue siendo el usuario 1000
+    find "$sshDir" -exec chown $UID_USER:$GID_USER {} +
 }
 
 ##
-# @function    main
-# @description Main orchestrator. Initializes the system and hands over 
-#              control to the container's primary process (CMD).
+# @function     main
 ##
 main() {
+    printf "SSH_SYSTEM: Initializing infrastructure...\n"
+
     bootstrapFileSystem
-    
-    # Register modular identity configs
-    registerSshInclude "$sshDir/github/config"
-    registerSshInclude "$sshDir/gitea/config"
-    
+
     hardenKeyPermissions
 
-    # Transition to the command passed via Docker CMD (e.g., /bin/sh)
+    printf "SSH_SYSTEM: Infrastructure ready. Permissions balanced.\n"
+
+    # Hand over to CMD
     if [ "$#" -gt 0 ]; then
         exec "$@"
     fi
 }
 
-# Execute main with all passed arguments
 main "$@"
