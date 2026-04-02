@@ -51,12 +51,6 @@ RUN apt-get update && apt-get install -y curl \
 
 # Configure
 FROM misc AS tool
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-    make cmake clang-format clang ninja-build libstdc++6
-
-RUN apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
 
 # Go
 COPY --from=misc-go /usr/local/go /usr/local/go
@@ -89,3 +83,10 @@ COPY --from=misc-gcc /usr/include/x86_64-linux-gnu/c++/${gcc_version} /usr/inclu
 # Git Bug
 COPY --from=misc-git-bug /usr/local/bin/git-bug /usr/local/bin/git-bug
 RUN ln -s /usr/local/bin/git-bug /usr/bin/git-bug
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    make cmake clang-format clang ninja-build libstdc++6 ncat
+
+RUN apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
