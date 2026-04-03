@@ -1,58 +1,92 @@
 services:
-  woodpecker-server:
-    image: woodpeckerci/woodpecker-server:v3
-    container_name: woodpecker-server
-    restart: always
-    networks:
-      network_service:
-        ipv4_address: 10.10.3.22
-    environment:
-      - WOODPECKER_OPEN=true
-      - WOODPECKER_ADMIN=admin
-      - WOODPECKER_AGENT_SECRET=${AGENT_SECRET}
+    woodpecker-server:
+        image: woodpeckerci/woodpecker-server:v3
+        container_name: woodpecker-server
+        restart: always
+        dns:
+            - 10.10.3.200
+        networks:
+            network_service:
+                ipv4_address: 10.10.3.22
+        environment:
+            - WOODPECKER_OPEN=true
+            - WOODPECKER_ADMIN=admin
+            - WOODPECKER_AGENT_SECRET=${AGENT_SECRET}
 
-      - WOODPECKER_GITEA=true
-      - WOODPECKER_GITEA_URL=http://gitea.docker.local
-      - WOODPECKER_GITEA_CLIENT=${GITEA_CLIENT}
-      - WOODPECKER_GITEA_SECRET=${GITEA_SECRET}
+            - WOODPECKER_GITEA=true
+            - WOODPECKER_GITEA_URL=https://gitea.docker.local
+            - WOODPECKER_GITEA_CLIENT=${GITEA_CLIENT}
+            - WOODPECKER_GITEA_SECRET=${GITEA_SECRET}
 
-      - WOODPECKER_HOST=http://woodpecker.docker.local
-      - WOODPECKER_GRPC_ADDR=0.0.0.0:9000
-      - WOODPECKER_SERVER_ADDR=0.0.0.0:8000
+            - WOODPECKER_HOST=https://woodpecker.docker.local
+            - WOODPECKER_GRPC_ADDR=0.0.0.0:9000
+            - WOODPECKER_SERVER_ADDR=0.0.0.0:8000
 
-      - WOODPECKER_DATABASE_DRIVER=sqlite3
-      - WOODPECKER_DATABASE_DATASOURCE=/var/lib/woodpecker/woodpecker.sqlite3
-    volumes:
-      - data:/var/lib/woodpecker
-    
-    # traefik
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.woodpecker.rule=Host(`woodpecker.docker.local`)"
-      - "traefik.http.routers.woodpecker.entrypoints=web"
-      - "traefik.http.services.woodpecker.loadbalancer.server.port=8000"
+            - WOODPECKER_DATABASE_DRIVER=sqlite3
+            - WOODPECKER_DATABASE_DATASOURCE=/var/lib/woodpecker/woodpecker.sqlite3
 
-  woodpecker-agent:
-    image: woodpeckerci/woodpecker-agent:v3
-    container_name: woodpecker-agent
-    restart: always
-    depends_on:
-      - woodpecker-server
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    environment:
-      - WOODPECKER_SERVER=10.10.3.22:9000
-      - WOODPECKER_AGENT_SECRET=${AGENT_SECRET}
-      - WOODPECKER_MAX_WORKFLOWS=2
-      - WOODPECKER_BACKEND_DOCKER_NETWORK=network_service
-      - WOODPECKER_BACKEND=docker
-    networks:
-      network_service:
-        ipv4_address: 10.10.3.23
+            - SSL_CERT_FILE=/step_ca/certs/root_ca.crt
+        volumes:
+            - data:/var/lib/woodpecker
+            - step-ca_data:/step_ca:ro
+
+        # traefik
+        labels:
+            - traefik.enable=true
+            # Servicio HTTP Principal
+            - traefik.http.services.woodpecker-service.loadbalancer.server.port=8000
+            
+            # Router HTTPS (Puerto 443)
+            - traefik.http.routers.woodpecker-secure.rule=Host(`woodpecker.docker.local`)
+            - traefik.http.routers.woodpecker-secure.entrypoints=websecure
+            - traefik.http.routers.woodpecker-secure.tls=true
+            - traefik.http.routers.woodpecker-secure.tls.certresolver=step-ca-resolver
+            - traefik.http.routers.woodpecker-secure.service=woodpecker-service
+
+            # Router HTTP (Redirección automática)
+            - traefik.http.routers.woodpecker.rule=Host(`woodpecker.docker.local`)
+            - traefik.http.routers.woodpecker.entrypoints=web
+            - traefik.http.routers.woodpecker.middlewares=woodpecker-redirect
+
+            # Middleware de Redirección
+            - traefik.http.middlewares.woodpecker-redirect.redirectscheme.scheme=https
+            - traefik.http.middlewares.woodpecker-redirect.redirectscheme.permanent=true
+
+            # gRPC para Agentes (Solo si los agentes van vía Traefik)
+            - traefik.http.services.woodpecker-grpc.loadbalancer.server.port=9000
+            - traefik.http.services.woodpecker-grpc.loadbalancer.server.scheme=h2c
+            
+            - traefik.http.routers.woodpecker-grpc-secure.rule=Host(`woodpecker-grpc.docker.local`)
+            - traefik.http.routers.woodpecker-grpc-secure.entrypoints=websecure
+            - traefik.http.routers.woodpecker-grpc-secure.tls=true
+            - traefik.http.routers.woodpecker-grpc-secure.tls.certresolver=step-ca-resolver
+            - traefik.http.routers.woodpecker-grpc-secure.service=woodpecker-grpcs
+        
+    woodpecker-agent:
+        image: woodpeckerci/woodpecker-agent:v3
+        container_name: woodpecker-agent
+        restart: always
+        depends_on:
+            - woodpecker-server
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+        environment:
+            - WOODPECKER_SERVER=10.10.3.22:9000
+            - WOODPECKER_AGENT_SECRET=${AGENT_SECRET}
+            - WOODPECKER_MAX_WORKFLOWS=2
+            - WOODPECKER_BACKEND_DOCKER_NETWORK=network_service
+            - WOODPECKER_BACKEND=docker
+        networks:
+            network_service:
+                ipv4_address: 10.10.3.23
+        dns:
+            - 10.10.3.200
 
 volumes:
-  data:
+    data:
+    step-ca_data:
+        external: true
 
 networks:
-  network_service:
-    external: true
+    network_service:
+        external: true
