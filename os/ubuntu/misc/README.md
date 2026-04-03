@@ -12,3 +12,7 @@ go install github.com/air-verse/air@v1.61.7
 go install -v golang.org/x/tools/gopls@v0.18.1
 
 go install -v github.com/go-delve/delve/cmd/dlv@v1.24.0 && go install -v honnef.co/go/tools/cmd/staticcheck@v0.6.1
+
+## Gitbug
+git bug user create
+git bug user new
