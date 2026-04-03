@@ -90,3 +90,8 @@ RUN apt-get update && \
 
 RUN apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+
+# Install woodpecker-cli for local development and testing of Woodpecker CI pipelines.
+ENV RELEASE_VERSION="3.13.0"
+RUN curl -fLO "https://github.com/woodpecker-ci/woodpecker/releases/download/v${RELEASE_VERSION}/woodpecker-cli_${RELEASE_VERSION}_amd64.deb"
+RUN apt --fix-broken install ./woodpecker-cli_${RELEASE_VERSION}_amd64.deb

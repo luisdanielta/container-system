@@ -3,14 +3,13 @@ services:
         image: woodpeckerci/woodpecker-server:v3
         container_name: woodpecker-server
         restart: always
-        dns:
-            - 10.10.3.200
         networks:
             network_service:
                 ipv4_address: 10.10.3.22
         environment:
             - WOODPECKER_OPEN=true
             - WOODPECKER_ADMIN=admin
+            # openssl rand -hex 32
             - WOODPECKER_AGENT_SECRET=${AGENT_SECRET}
 
             - WOODPECKER_GITEA=true
@@ -79,8 +78,6 @@ services:
         networks:
             network_service:
                 ipv4_address: 10.10.3.23
-        dns:
-            - 10.10.3.200
 
 volumes:
     data:
