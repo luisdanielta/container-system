@@ -5,6 +5,9 @@ services:
     environment:
       - USER_UID=1000
       - USER_GID=1000
+      - GITEA__migrations__ALLOWED_DOMAINS=gitea.docker.local
+      - GITEA__server__ROOT_URL=https://gitea.docker.local/
+      - SSL_CERT_FILE=/step_ca/certs/root_ca.crt
     restart: unless-stopped
     networks:
       - network_service # :3000 :22 Auto set ipv4
@@ -12,6 +15,7 @@ services:
       - data:/data
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
+      - step-ca_data:/step_ca:ro
 
     # traefik
     labels:
@@ -30,6 +34,8 @@ services:
 volumes:
   data:
     external: false
+  step-ca_data:
+    external: true
 
 networks:
   network_service:
