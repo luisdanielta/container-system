@@ -58,16 +58,18 @@ services:
       POSTGRES_INITDB_ARGS: --data-checksums
     networks:
       network_db:
-        ipv4_address: 10.10.2.33 # :5432
+        ipv4_address: 10.10.2.34 # :5432
       network_service:
-        ipv4_address: 10.10.3.153
+        ipv4_address: 10.10.3.154
     volumes:
-      - shared:/var/lib/postgresql/data
+      - xaiena:/var/lib/postgresql/data
 
 volumes:
   langfuse:
     external: false
   shared:
+    external: false
+  xaiena:
     external: false
 
 networks:
