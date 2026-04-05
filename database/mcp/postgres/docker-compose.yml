@@ -1,0 +1,21 @@
+services:
+mcp_postgres_server:
+    image: mcp/postgres # Asegúrate de haber buildeado esta imagen localmente
+    container_name: mcp_postgres_server
+    depends_on:
+      xaiena_postgres:
+        condition: service_healthy
+    command: ["postgresql://postgres_xaiena:postgres_xaiena@10.10.2.34:5432/postgres"]
+    networks:
+      network_db:
+        ipv4_address: 10.10.2.35
+
+networks:
+  network_db:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.10.2.0/24
+
+volumes:
+  xaiena:
