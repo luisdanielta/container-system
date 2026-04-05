@@ -141,7 +141,7 @@ Optionally, you can add it to a file called `.vscode/mcp.json` in your workspace
 Docker:
 
 ```sh
-docker build -t mcp/postgres -f src/postgres/Dockerfile . 
+docker build -t mcp/postgres . 
 ```
 
 ## License
