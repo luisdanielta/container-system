@@ -1,0 +1,45 @@
+services:
+  mattermost:
+    image: mattermost/mattermost-team-edition:10.11.8
+    container_name: mattermost
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 2G
+    read_only: false
+    networks:
+      network_service:
+        ipv4_address: 10.10.3.120
+    tmpfs:
+      - /tmp
+    volumes:
+      - config:/mattermost/config:rw
+      - data:/mattermost/data:rw
+      - logs:/mattermost/logs:rw
+      - plugins:/mattermost/plugins:rw
+      - client_plugins:/mattermost/client/plugins:rw
+      - bleve_indexes:/mattermost/bleve-indexes:rw
+    environment:
+      - TZ=America/Bogota
+      - MM_SQLSETTINGS_DRIVERNAME=postgres
+      - MM_SQLSETTINGS_DATASOURCE=postgres://postgres_shared:postgres_shared@10.10.3.153:5432/mattermost?sslmode=disable&connect_timeout=10
+      - MM_BLEVESETTINGS_INDEXDIR=/mattermost/bleve-indexes
+    
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mattermost.rule=Host(`chat.docker.local`)"
+      - "traefik.http.routers.mattermost.entrypoints=websecure"
+      - "traefik.http.routers.mattermost.tls=true"
+      - "traefik.http.services.mattermost.loadbalancer.server.port=8065"
+
+networks:
+  network_service:
+    external: true
+
+volumes:
+  config:
+  data:
+  logs:
+  plugins:
+  client_plugins:
+  bleve_indexes:
