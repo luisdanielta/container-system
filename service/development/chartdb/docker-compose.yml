@@ -9,19 +9,17 @@ services:
     restart: unless-stopped
     networks:
       - network_service
-    dns:
-      - 10.10.3.200
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.chartdb.rule=Host(`chartdb.docker.local`)"
       - "traefik.http.routers.chartdb.entrypoints=websecure"
       - "traefik.http.routers.chartdb.tls=true"
       - "traefik.http.services.chartdb.loadbalancer.server.port=80"
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
+    # logging:
+    #   driver: "json-file"
+    #   options:
+    #     max-size: "10m"
+    #     max-file: "3"
 
 networks:
   network_service:
