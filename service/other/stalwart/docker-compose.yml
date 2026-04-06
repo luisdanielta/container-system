@@ -1,0 +1,25 @@
+services:
+  stalwart:
+    image: stalwartlabs/stalwart:v0.15.5
+    container_name: stalwart
+    restart: unless-stopped
+    volumes:
+      - data:/opt/stalwart
+    environment:
+      - TZ=America/Bogota
+    networks:
+      - network_service
+    
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.stalwart.rule=Host(`mail.docker.local`)"
+      - "traefik.http.routers.stalwart.entrypoints=websecure"
+      - "traefik.http.routers.stalwart.tls=true"
+      - "traefik.http.services.stalwart.loadbalancer.server.port=8080"
+
+volumes:
+  data:
+
+networks:
+  network_service:
+    external: true

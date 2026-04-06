@@ -8,39 +8,14 @@ services:
     networks:
       network_service:
         ipv4_address: 10.10.3.199
-
+    environment:
+      - LEGO_CA_CERTIFICATES=/etc/ssl/step-ca/certs/root_ca.crt
     command:
-      # EntryPoints
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
-      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
-      - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
-      - "--entrypoints.websecure.address=:443"
-      - "--entrypoints.websecure.http.tls=true"
-
-      # Attach the static configuration tls.yaml file that contains the tls configuration settings
-      - "--providers.file.filename=/etc/traefik/dynamic/tls.yaml"
-
-      # Providers 
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--providers.docker.network=network_service"
-
-      # API & Dashboard
-      - "--api.dashboard=true"
-      - "--api.insecure=false"
-      # - "--entrypoints.websecure.http.tls.certresolver=le"
-
-      # ports:
-      #   - "80:80"
-      #   - "443:443"
-      #   - "8080:8080"
+      - "--configFile=/etc/traefik/traefik.yml"
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - step-ca_data:/etc/ssl/step-ca:ro
       - ./traefik.yml:/etc/traefik/traefik.yml:ro
-      - ./dynamic/tls.yaml:/etc/traefik/dynamic/tls.yaml:ro
-      - ./certs:/etc/traefik/certs:ro
-
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.dashboard.rule=Host(`dashboard.docker.local`)"
@@ -49,8 +24,8 @@ services:
       - "traefik.http.routers.dashboard.tls=true"
 
 volumes:
-  dynamic:
-    external: false
+  step-ca_data:
+    external: true
 
 networks:
   network_service:

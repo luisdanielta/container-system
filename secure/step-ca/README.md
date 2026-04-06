@@ -1,0 +1,1 @@
+docker exec step-ca step certificate fingerprint /home/step/certs/root_ca.crt

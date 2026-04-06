@@ -5,6 +5,9 @@
 data/
 .env
 
+*.pem
+*.pub
+
 .terraform
 .terraform.lock.hcl
 terraform.tfstate

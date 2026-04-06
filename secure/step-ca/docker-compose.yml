@@ -1,0 +1,32 @@
+services:
+  step-ca:
+    image: smallstep/step-ca:0.30.0
+    container_name: step-ca
+    environment:
+      DOCKER_STEPCA_INIT_NAME: "Local CA"
+      DOCKER_STEPCA_INIT_DNS_NAMES: "10.10.3.198"
+      DOCKER_STEPCA_INIT_PASSWORD: "password"
+      DOCKER_STEPCA_INIT_REMOTE_MANAGEMENT: "true"
+      DOCKER_STEPCA_INIT_PROVISIONER_NAME: "admin"
+      DOCKER_STEPCA_INIT_SSH: "true"
+      DOCKER_STEPCA_INIT_ACME: "true"
+    volumes:
+      - data:/home/step
+    healthcheck:
+      test: ["CMD", "step", "ca", "health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      network_service:
+        ipv4_address: 10.10.3.198
+    restart: unless-stopped
+    dns:
+      - "10.10.3.200"
+
+volumes:
+  data:
+
+networks:
+  network_service:
+    external: true

@@ -2,16 +2,15 @@ services:
   squid:
     image: ubuntu/squid:5.2-22.04_beta
     container_name: squid
-    restart: always
-    ports:
-      - 3128:3128
+    restart: unless-stopped
     volumes:
       - ./squid.conf:/etc/squid/squid.conf
       - data:/var/spool/squid
     environment:
       - TZ=${TZ}
     networks:
-      - network_service
+      network_service:
+        ipv4_address: 10.10.3.197 # 3128
 
 volumes:
   data:

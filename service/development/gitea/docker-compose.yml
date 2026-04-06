@@ -5,6 +5,9 @@ services:
     environment:
       - USER_UID=1000
       - USER_GID=1000
+      - GITEA__migrations__ALLOWED_DOMAINS=gitea.docker.local
+      - GITEA__server__ROOT_URL=https://gitea.docker.local/
+      - SSL_CERT_FILE=/step_ca/certs/root_ca.crt
     restart: unless-stopped
     networks:
       - network_service # :3000 :22 Auto set ipv4
@@ -12,17 +15,27 @@ services:
       - data:/data
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
+      - step-ca_data:/step_ca:ro
 
     # traefik
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.gitea.rule=Host(`gitea.docker.local`)"
-      - "traefik.http.routers.gitea.entrypoints=web"
+      - "traefik.http.routers.gitea.entrypoints=websecure"
+      - "traefik.http.routers.gitea.tls=true"
       - "traefik.http.services.gitea.loadbalancer.server.port=3000"
+      # SSH
+      - "traefik.tcp.routers.gitea-ssh.rule=HostSNI(`gitea.docker.local`)"
+      - "traefik.tcp.routers.gitea-ssh.entrypoints=ssh-tls"
+      - "traefik.tcp.routers.gitea-ssh.tls=true"
+      - "traefik.tcp.routers.gitea-ssh.tls.certresolver=step-ca-resolver"
+      - "traefik.tcp.services.gitea-ssh.loadbalancer.server.port=22"
 
 volumes:
   data:
     external: false
+  step-ca_data:
+    external: true
 
 networks:
   network_service:

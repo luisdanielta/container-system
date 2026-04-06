@@ -1,0 +1,15 @@
+services:
+  xaiena_server:
+    image: mcp/postgres
+    container_name: mcp_xaiena
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    command: ["postgresql://postgres_xaiena:postgres_xaiena@10.10.3.154:5432/postgres"]
+    networks:
+      network_service:
+        ipv4_address: 10.10.3.100
+
+networks:
+  network_service:
+    external: true
