@@ -1,0 +1,27 @@
+services:
+  chat-ui:
+    image: ghcr.io/huggingface/chat-ui:sha-f0ce7fc
+    container_name: webui-station
+    volumes:
+      - data:/data
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mattermost.rule=Host(`chat-ui.docker.local`)"
+      - "traefik.http.routers.mattermost.entrypoints=websecure"
+      - "traefik.http.routers.mattermost.tls=true"
+      - "traefik.http.services.mattermost.loadbalancer.server.port=3000"
+    networks:
+      - network_service
+    environment:
+      - MONGODB_URL=mongodb://shared:shared@10.10.3.20
+      - MONGODB_DB_NAME=chat-ui
+      - OPENAI_BASE_URL=http://10.10.3.32:11434/v1
+      - OPENAI_API_KEY=ollama
+
+networks:
+  network_service:
+    external: true
+
+volumes:
+  data:

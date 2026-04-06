@@ -1,0 +1,17 @@
+services:
+  ollama:
+    image: ollama/ollama:0.20.2
+    container_name: ollama
+    restart: unless-stopped
+    volumes:
+      - data:/root/.ollama
+    networks:
+      network_service:
+        ipv4_address: 10.10.3.32 # 11434
+
+networks:
+  network_service:
+    external: true
+
+volumes:
+  data:

@@ -1,25 +1,22 @@
 services:
-  mongodb:
+  mongo_shared:
     image: mongo:8.0
-    container_name: mongo_db
-    ports:
-      - "27017:27017"
+    container_name: mongo_shared
     restart: unless-stopped
     volumes:
-      - data:/data/db
-      - data:/data/configdb
+      - data:/data
     environment:
-      MONGO_INITDB_ROOT_USERNAME: 'system-env'
-      MONGO_INITDB_ROOT_PASSWORD: '0000'
+      MONGO_INITDB_ROOT_USERNAME: 'shared'
+      MONGO_INITDB_ROOT_PASSWORD: 'shared'
 
     networks:
-      network_db:
-        ipv4_address: 10.10.2.20
+      network_service:
+        ipv4_address: 10.10.3.20 #27017
 
 volumes:
   data:
     external: false
 
 networks:
-  network_db:
+  network_service:
     external: true
