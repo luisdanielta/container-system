@@ -7,10 +7,10 @@ services:
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.mattermost.rule=Host(`chat-ui.docker.local`)"
-      - "traefik.http.routers.mattermost.entrypoints=websecure"
-      - "traefik.http.routers.mattermost.tls=true"
-      - "traefik.http.services.mattermost.loadbalancer.server.port=3000"
+      - "traefik.http.routers.chat-ui.rule=Host(`chat-ui.docker.local`)"
+      - "traefik.http.routers.chat-ui.entrypoints=websecure"
+      - "traefik.http.routers.chat-ui.tls=true"
+      - "traefik.http.services.chat-ui.loadbalancer.server.port=3000"
     networks:
       - network_service
     environment:
