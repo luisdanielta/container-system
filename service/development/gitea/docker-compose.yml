@@ -5,7 +5,7 @@ services:
     environment:
       - USER_UID=1000
       - USER_GID=1000
-      - GITEA__migrations__ALLOWED_DOMAINS=gitea.docker.local
+      - GITEA__migrations__ALLOWED_DOMAINS=gitea.docker.local,github.com,api.github.com
       - GITEA__server__ROOT_URL=https://gitea.docker.local/
       - SSL_CERT_FILE=/step_ca/certs/root_ca.crt
     restart: unless-stopped
