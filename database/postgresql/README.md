@@ -9,3 +9,6 @@ CREATE DATABASE mattermost;
 CREATE DATABASE n8n;
 
 DROP DATABASE coder;
+
+psql -U postgres_xaiena -d postgres
+CREATE DATABASE cookery;
