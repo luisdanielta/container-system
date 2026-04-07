@@ -17,8 +17,8 @@ services:
       - NODE_TLS_REJECT_UNAUTHORIZED=0
       - MONGODB_URL=mongodb://shared:shared@10.10.3.20
       - MONGODB_DB_NAME=chat-ui
-      - OPENAI_BASE_URL=http://10.10.3.32:11434/v1
-      - OPENAI_API_KEY=ollama
+      - OPENAI_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai/
+      - OPENAI_API_KEY=${KEY}
       - MCP_FORWARD_HF_USER_TOKEN=true
       - MCP_SERVERS=[{"name":"Postgres Cookery","url":"https://mcp-cookery.docker.local/sse"}]
 
