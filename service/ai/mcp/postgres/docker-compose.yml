@@ -9,8 +9,13 @@ services:
       - "--transport=sse"
     restart: unless-stopped
     networks:
-      network_service:
-        ipv4_address: 10.10.3.80
+      - network_service
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mcp-cookery.rule=Host(`mcp-cookery.docker.local`)"
+      - "traefik.http.routers.mcp-cookery.entrypoints=websecure"
+      - "traefik.http.routers.mcp-cookery.tls=true"
+      - "traefik.http.services.mcp-cookery.loadbalancer.server.port=8000"
 
 networks:
   network_service:
