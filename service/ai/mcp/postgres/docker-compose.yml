@@ -1,0 +1,17 @@
+services:
+  mcp-cookery:
+    image: crystaldba/postgres-mcp:0.3.0
+    container_name: mcp-postgres-cookery
+    environment:
+      - DATABASE_URI=postgresql://postgres_xaiena:postgres_xaiena@10.10.3.154:5432/cookery
+    command: 
+      - "--access-mode=unrestricted"
+      - "--transport=sse"
+    restart: unless-stopped
+    networks:
+      network_service:
+        ipv4_address: 10.10.3.80
+
+networks:
+  network_service:
+    external: true
