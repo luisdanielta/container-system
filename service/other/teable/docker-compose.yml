@@ -3,8 +3,6 @@ services:
     image: ghcr.io/teableio/teable:0.5.0-alpha-1.10.0-build.842-amd64
     restart: unless-stopped
     container_name: teable
-    ports:
-      - 3045:3000
     volumes:
       - data:/app/.assets:rw
     environment:
@@ -15,8 +13,13 @@ services:
       - BACKEND_CACHE_PROVIDER=redis
       - BACKEND_CACHE_REDIS_URI=redis://default@10.10.3.143:6379/0
     networks:
-      network_service:
-        ipv4_address: 10.10.3.28 #3000
+      - network_service
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.teable.rule=Host(`teable.docker.local`)"
+      - "traefik.http.routers.teable.entrypoints=websecure"
+      - "traefik.http.routers.teable.tls=true"
+      - "traefik.http.services.teable.loadbalancer.server.port=3000"
 
 networks:
   network_service:

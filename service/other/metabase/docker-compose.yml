@@ -2,22 +2,20 @@ services:
   metabase:
     image: metabase/metabase:v0.54.3.2
     container_name: metabase
-    ports:
-      - 3080:3000
     environment:
-      - JAVA_OPTS=-Xms512m -Xmx1512m
+      - JAVA_OPTS=-Xms512m -Xmx1024m
       - MB_DB_FILE=/metabase-data/metabase.db
     restart: unless-stopped
     volumes:
       - data:/metabase-data
-      - sqlite_data:/data
     networks:
-      network_service:
-        ipv4_address: 10.10.3.11
-      network_db:
-        ipv4_address: 10.10.2.11
-    dns:
-        - 10.10.3.3
+      - network_service
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.metabase.rule=Host(`metabase.docker.local`)"
+      - "traefik.http.routers.metabase.entrypoints=websecure"
+      - "traefik.http.routers.metabase.tls=true"
+      - "traefik.http.services.metabase.loadbalancer.server.port=3000"
     # health
     healthcheck:
       test: curl --fail -I http://localhost:3000/api/health || exit 1
@@ -27,12 +25,7 @@ services:
 
 volumes:
   data:
-    external: false
-  sqlite_data:
-    external: true
 
 networks:
   network_service:
-    external: true
-  network_db:
     external: true
