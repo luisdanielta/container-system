@@ -1,0 +1,32 @@
+services:
+  server:
+    image: docker.getoutline.com/outlinewiki/outline:1.6.1
+    container_name: outline
+    environment:
+      - SSL_CERT_FILE=/step_ca/certs/root_ca.crt
+      - NODE_TLS_REJECT_UNAUTHORIZED=0
+    restart: unless-stopped
+    volumes:
+      - data:/var/lib/outline/data
+      - step-ca_data:/step_ca:ro
+    env_file: ./.env
+    networks:
+      - network_service
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.teable.rule=Host(`outline.docker.local`)"
+      - "traefik.http.routers.teable.entrypoints=websecure"
+      - "traefik.http.routers.teable.tls=true"
+      - "traefik.http.services.teable.loadbalancer.server.port=3000"
+
+volumes:
+  data:
+    external: false
+  step-ca_data:
+    external: true
+
+
+networks:
+  network_service:
+    external: true
