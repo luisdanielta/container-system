@@ -19,12 +19,20 @@ services:
     networks:
       - network_security
     volumes:
-      - /var/lib/docker/volumes:/backup:ro
+      - gitea_data:/backup/gitea:ro
+      - postgresql_shared:/backup/postgres_shared:ro
+      
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
     dns:
       - 10.10.5.200
+
+volumes:
+  gitea_data:
+    external: true
+  postgresql_shared:
+    external: true
 
 networks:
   network_security:
