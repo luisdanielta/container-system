@@ -23,8 +23,9 @@ services:
       - postgresql_shared:/backup/postgres_shared:ro
       
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /etc/localtime:/etc/localtime:ro
-      - /etc/timezone:/etc/timezone:ro
+
+      # Alternative to mounting individual volumes, but may include more data than desired.
+      # - /var/lib/docker/volumes:/backup:ro 
     dns:
       - 10.10.5.200
 
