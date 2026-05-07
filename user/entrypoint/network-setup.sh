@@ -160,6 +160,7 @@ generate_netplan_config() {
         log_info "Respaldo anterior guardado"
     fi
     
+    # Generar YAML optimizado y validado para Netplan (Ubuntu 22.04+)
     cat > "${NETPLAN_CONFIG}" <<EOF
 network:
   version: 2
@@ -168,15 +169,12 @@ network:
     ${interface}:
       dhcp4: false
       addresses:
-        - address: ${ip}
-          prefix: ${netmask}
+        - ${ip}/${netmask}
       routes:
-        - to: 0.0.0.0/0
+        - to: default
           via: ${gateway}
       nameservers:
-        addresses:
-          - ${dns}
-          - ${DNS_FALLBACK}
+        addresses: [${dns}, ${DNS_FALLBACK}]
 EOF
     
     chmod 600 "${NETPLAN_CONFIG}"
