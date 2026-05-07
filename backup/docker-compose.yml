@@ -1,20 +1,31 @@
 services:
-  backup:
-    container_name: backup
-    build:
-      context: .
-      dockerfile: Dockerfile
-    restart: no
-    volumes:
-      - ./restore:/mnt/restore
-      - ubuntu_user_data_luist:/mnt/ubuntu/user_data_luist
-      - ubuntu_user_data_carlj:/mnt/ubuntu/user_data_carlj
-      - ubuntu_user_shared:/mnt/ubuntu/user_shared
+  checkpoint:
+    image: offen/docker-volume-backup:v2
+    container_name: checkpoint
+    restart: always
+    environment:
+      AWS_S3_BUCKET_NAME: hp22b
+      AWS_ENDPOINT_PROTO: https
+      AWS_ENDPOINT: storage.googleapis.com
+      AWS_ACCESS_KEY_ID: GOOG1E5LIKITZCKVVUX3NB72657HIZXFRU2NW5CY6XJTAC5HMGFJBYJ3PX4XX
+      AWS_SECRET_ACCESS_KEY: TTUNCZRXHDs+BQXz980jV0AOI+dhjR2/mJP+dCay
 
-volumes:
-  ubuntu_user_data_luist:
-    external: true
-  ubuntu_user_data_carlj:
-    external: true
-  ubuntu_user_shared:
+      TZ: "America/Bogota"
+
+      BACKUP_SOURCES: /backup
+      BACKUP_FILENAME: checkpoint_%Y%m%d_%H%M%S.tar.gz
+      BACKUP_CRON_EXPRESSION: "0 3 * * *" # Everyday at 3:00 AM
+      BACKUP_RETENTION_DAYS: 15
+    networks:
+      - network_security
+    volumes:
+      - /var/lib/docker/volumes:/backup:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    dns:
+      - 10.10.5.200
+
+networks:
+  network_security:
     external: true
