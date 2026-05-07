@@ -1,5 +1,5 @@
 services:
-  stalwart:
+  server:
     image: stalwartlabs/stalwart:v0.15.5
     container_name: stalwart
     restart: unless-stopped
@@ -7,9 +7,11 @@ services:
       - data:/opt/stalwart
     environment:
       - TZ=America/Bogota
+      - SSL_CERT_FILE=/step_ca/certs/root_ca.crt
     networks:
-      - network_service
-    
+      network_service:
+        ipv4_address: 10.10.3.35
+      
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.stalwart.rule=Host(`mail.docker.local`)"
@@ -19,6 +21,9 @@ services:
 
 volumes:
   data:
+    external: false
+  step-ca_data:
+    external: true
 
 networks:
   network_service:
