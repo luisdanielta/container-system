@@ -170,7 +170,9 @@ network:
       addresses:
         - address: ${ip}
           prefix: ${netmask}
-      gateway4: ${gateway}
+      routes:
+        - to: 0.0.0.0/0
+          via: ${gateway}
       nameservers:
         addresses:
           - ${dns}
