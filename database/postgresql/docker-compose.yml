@@ -41,6 +41,10 @@ services:
         ipv4_address: 10.10.3.153
     volumes:
       - shared:/var/lib/postgresql/data
+
+    labels:
+    # Backup
+      - "docker-volume-backup.stop-during-backup=true"
   
   xaiena_postgres:
     image: postgres:15
