@@ -16,6 +16,8 @@ services:
       - "traefik.http.routers.minio.rule=Host(`minio.docker.local`)"
       - "traefik.http.routers.minio.entrypoints=web"
       - "traefik.http.services.minio.loadbalancer.server.port=9090"
+    # Backup
+      - "docker-volume-backup.stop-during-backup=true"
 
 networks:
   network_service:

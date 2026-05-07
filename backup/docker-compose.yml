@@ -19,8 +19,10 @@ services:
     networks:
       - network_security
     volumes:
+      - minio_data:/backup/minio:ro
       - gitea_data:/backup/gitea:ro
       - postgresql_shared:/backup/postgres_shared:ro
+
       
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
@@ -30,6 +32,8 @@ services:
       - 10.10.5.200
 
 volumes:
+  minio_data:
+    external: true
   gitea_data:
     external: true
   postgresql_shared:
