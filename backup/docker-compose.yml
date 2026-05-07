@@ -4,13 +4,13 @@ services:
     container_name: checkpoint
     restart: always
     environment:
-      AWS_S3_BUCKET_NAME: hp22b
-      AWS_ENDPOINT_PROTO: https
-      AWS_ENDPOINT: storage.googleapis.com
-      AWS_ACCESS_KEY_ID: GOOG1E5LIKITZCKVVUX3NB72657HIZXFRU2NW5CY6XJTAC5HMGFJBYJ3PX4XX
-      AWS_SECRET_ACCESS_KEY: TTUNCZRXHDs+BQXz980jV0AOI+dhjR2/mJP+dCay
+      AWS_S3_BUCKET_NAME: ${AWS_S3_BUCKET_NAME:-}
+      AWS_ENDPOINT_PROTO: ${AWS_ENDPOINT_PROTO:-}
+      AWS_ENDPOINT: ${AWS_ENDPOINT:-}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-}
 
-      TZ: "America/Bogota"
+      TZ: ${TZ:-UTC}
 
       BACKUP_SOURCES: /backup
       BACKUP_FILENAME: checkpoint_%Y%m%d_%H%M%S.tar.gz
