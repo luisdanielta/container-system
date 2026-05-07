@@ -13,9 +13,9 @@ services:
       TZ: ${TZ:-UTC}
 
       BACKUP_SOURCES: /backup
-      BACKUP_FILENAME: checkpoint_%Y%m%d_%H%M%S.tar.gz
-      BACKUP_CRON_EXPRESSION: "0 3 * * *" # Everyday at 3:00 AM
-      BACKUP_RETENTION_DAYS: 15
+      BACKUP_FILENAME: checkpoint_%Y%m%d_%H.tar.gz
+      BACKUP_CRON_EXPRESSION: "0 */8 * * *" # Every 8 hours
+      BACKUP_RETENTION_DAYS: 3
     networks:
       - network_security
     volumes:
