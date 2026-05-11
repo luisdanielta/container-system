@@ -1,37 +1,34 @@
 services:
-  rstudio:
+  server:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: rstudio
     image: rstudio:lidr
-    privileged: true
-    devices:
-      - /dev/dri/card0:/dev/dri/card0:rwm
-      - /dev/dri/renderD128:/dev/dri/renderD128:rwm
-    ports:
-      - 8787:8787
+    container_name: rstudio
     environment:
-      PASSWORD: "password"
+      PASSWORD: ${PASSWORD:-}
       DISABLE_AUTH: true
     volumes:
-      - config:/home/rstudio/.config/rstudio
       - data:/home/rstudio
       - workspace_data:/home/rstudio/workspace
 
     networks:
-      network_service:
-        ipv4_address: 10.10.3.40
-    dns:
-      - 10.10.3.200
+      - network_service
+
+     # traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.rstudio.rule=Host(`rstudio.cs`)"
+      - "traefik.http.routers.rstudio.entrypoints=websecure"
+      - "traefik.http.routers.rstudio.tls=true"
+      - "traefik.http.routers.rstudio.tls.certresolver=step-ca-resolver"
+      - "traefik.http.services.rstudio.loadbalancer.server.port=8787"
 
 networks:
   network_service:
     external: true
 
 volumes:
-  config:
-    external: false
   data:
     external: false
   workspace_data:
