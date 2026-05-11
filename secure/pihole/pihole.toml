@@ -164,7 +164,7 @@
   nice = -10
   addr2line = true
   etc_dnsmasq_d = false
-  dnsmasq_lines = ["address=/.docker.local/10.10.3.199"] ### CUSTOM
+  dnsmasq_lines = ["address=/.docker.local/10.10.3.199", "address=/.cs/10.10.3.199"] ### CUSTOM
   extraLogging = false
   readOnly = false
   normalizeCPU = true
