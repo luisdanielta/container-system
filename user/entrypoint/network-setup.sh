@@ -151,16 +151,13 @@ generate_netplan_config() {
     local gateway="$4"
     local dns="$5"
     
-    # Crear directorio si no existe
     mkdir -p "${NETPLAN_DIR}"
     
-    # Respaldar configuración anterior si existe
     if [[ -f "${NETPLAN_CONFIG}" ]]; then
         cp "${NETPLAN_CONFIG}" "${NETPLAN_CONFIG}.bak.$(date +%s)"
         log_info "Respaldo anterior guardado"
     fi
     
-    # Generar YAML optimizado y validado para Netplan (Ubuntu 22.04+)
     cat > "${NETPLAN_CONFIG}" <<EOF
 network:
   version: 2
@@ -174,7 +171,9 @@ network:
         - to: default
           via: ${gateway}
       nameservers:
-        addresses: [${dns}, ${DNS_FALLBACK}]
+        addresses:
+          - ${dns}
+          - ${DNS_FALLBACK}
 EOF
     
     chmod 600 "${NETPLAN_CONFIG}"

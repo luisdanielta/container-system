@@ -6,6 +6,9 @@ RUN apt-get update && \
     gnupg \
     lsb-release \
     software-properties-common \
+    net-tools \
+    iproute2 \
+    netplan.io \
     build-essential
 
 RUN apt-get clean && \

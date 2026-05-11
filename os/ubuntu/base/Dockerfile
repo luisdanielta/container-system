@@ -26,9 +26,11 @@ RUN apt-get update && apt-get install -y curl nano git git-lfs wget htop \
 
 # Copy entrypoint scripts and configuration
 COPY --from=entrydata /entrypoint/create-user.sh /usr/local/bin/create-user.sh
+COPY --from=entrydata /entrypoint/network-setup.sh /usr/local/bin/network-setup.sh
 
 # Configure
 RUN chmod +x /usr/local/bin/create-user.sh
+RUN chmod +x /usr/local/bin/network-setup.sh
 EXPOSE 22
 
 COPY supervisord.conf /etc/supervisord.conf
